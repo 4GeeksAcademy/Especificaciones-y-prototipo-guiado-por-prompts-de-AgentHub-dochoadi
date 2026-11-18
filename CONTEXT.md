@@ -26,13 +26,13 @@ Fijar en la spec y no variar:
 | Fase | Entregable | Estado |
 |---|---|---|
 | F0 | Estructura Claude + docs | hecho al commitear |
-| F1 | `SPECS.md` (commit propio) | pendiente |
+| F1 | `SPECS.md` (commit propio) | hecho (commit `docs(F1): añade SPECS.md`, tag `F1-spec` pendiente de push) |
 | F2 | Propuesta Google Stitch (`docs/stitch/`) | pendiente |
 | F3 | `index.html` | pendiente |
 | F4 | QA + `docs/EVALUACION.md` | pendiente |
 | F5 | Entrega GitHub público | pendiente |
 
-**Último commit/tag**: _(completar tras el push de F0 desde Codespace)_ · **Próximo paso**: F1 — redactar `SPECS.md`.
+**Último commit/tag**: _(completar tras el push de F0 desde Codespace)_ · **Próximo paso**: F2 — prompt de Google Stitch a partir de `SPECS.md` (agente `stitch-prompter`).
 Reanudar sesión: `docs/RETOMAR.md`.
 
 Detalle en `docs/FASES.md`. Evaluación en `docs/EVALUACION.md`. Errores en `docs/ERRORES.md`.
