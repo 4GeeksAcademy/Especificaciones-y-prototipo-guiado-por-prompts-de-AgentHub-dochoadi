@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AgentHub — Panel de administración</title>
+  <script>
+    try { if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark'); } catch (_) {}
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased">
+
+  <!-- Sprite de iconos (trazos tipo Heroicons outline, 24×24). Uso: <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-…"/></svg> -->
+  <svg class="absolute h-0 w-0 overflow-hidden" aria-hidden="true" focusable="false">
+    <symbol id="i-squares-2x2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.2 3.3-5 6.5-5s5.9 1.8 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.6c2.6.2 4.4 1.8 5 4.4"/></symbol>
+    <symbol id="i-cpu-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+    <symbol id="i-puzzle-piece" viewBox="0 0 24 24"><path d="M4 9h3a2 2 0 1 1 4 0h3v3a2 2 0 1 1 0 4v3H4v-4a2 2 0 1 0 0-4V9Z"/></symbol>
+    <symbol id="i-document-text" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-exclamation-triangle" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 10v4M12 17.5v.01"/></symbol>
+    <symbol id="i-banknotes" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9v.01M18 15v.01"/></symbol>
+    <symbol id="i-receipt-percent" viewBox="0 0 24 24"><path d="M6 3v18l2-1.5L10 21l2-1.5L14 21l2-1.5L18 21V3l-2 1.5L14 3l-2 1.5L10 3 8 4.5 6 3Z"/><path d="M9 15l6-6"/></symbol>
+    <symbol id="i-chart-bar" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15v-4M12 15V7M17 15v-6"/></symbol>
+    <symbol id="i-information-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+    <symbol id="i-globe-alt" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></symbol>
+    <symbol id="i-document-magnifying-glass" viewBox="0 0 24 24"><path d="M6 3h8l4 4v6"/><path d="M14 3v4h4"/><circle cx="10.5" cy="15.5" r="3"/><path d="M13 18l3 3"/></symbol>
+    <symbol id="i-calendar-days" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01"/></symbol>
+    <symbol id="i-envelope" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="i-circle-stack" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+    <symbol id="i-ellipsis-vertical" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-cog-6-tooth" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-arrow-down-tray" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+    <symbol id="i-x-mark" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  </svg>
+
+  <!-- Sidebar persistente -->
+  <aside class="fixed inset-y-0 left-0 z-30 flex w-16 flex-col border-r border-slate-200 bg-white lg:w-64 dark:border-slate-800 dark:bg-slate-900">
+    <div class="flex h-16 items-center justify-center gap-3 border-b border-slate-200 lg:justify-start lg:px-5 dark:border-slate-800">
+      <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-indigo-600 text-sm font-bold text-white">AH</span>
+      <div class="hidden lg:block">
+        <p class="font-semibold">AgentHub</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Panel de administración</p>
+      </div>
+    </div>
+
+    <nav aria-label="Navegación principal" class="flex-1 p-2 lg:p-3">
+      <ul class="space-y-1">
+        <li><a href="#dashboard" data-nav="dashboard" title="Dashboard" aria-label="Dashboard" class="relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 lg:justify-start dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+          <span data-bar class="absolute inset-y-1 left-0 hidden w-1 rounded-r bg-indigo-600 dark:bg-indigo-400"></span>
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-squares-2x2"/></svg>
+          <span class="hidden lg:inline">Dashboard</span>
+        </a></li>
+        <li><a href="#usuarios" data-nav="usuarios" title="Usuarios" aria-label="Usuarios" class="relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 lg:justify-start dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+          <span data-bar class="absolute inset-y-1 left-0 hidden w-1 rounded-r bg-indigo-600 dark:bg-indigo-400"></span>
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-users"/></svg>
+          <span class="hidden lg:inline">Usuarios</span>
+        </a></li>
+        <li><a href="#agentes" data-nav="agentes" title="Agentes" aria-label="Agentes" class="relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 lg:justify-start dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+          <span data-bar class="absolute inset-y-1 left-0 hidden w-1 rounded-r bg-indigo-600 dark:bg-indigo-400"></span>
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-cpu-chip"/></svg>
+          <span class="hidden lg:inline">Agentes</span>
+        </a></li>
+        <li><a href="#skills" data-nav="skills" title="Skills" aria-label="Skills" class="relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 lg:justify-start dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+          <span data-bar class="absolute inset-y-1 left-0 hidden w-1 rounded-r bg-indigo-600 dark:bg-indigo-400"></span>
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-puzzle-piece"/></svg>
+          <span class="hidden lg:inline">Skills</span>
+        </a></li>
+        <li><a href="#contrataciones" data-nav="contrataciones" title="Contrataciones" aria-label="Contrataciones" class="relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 lg:justify-start dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+          <span data-bar class="absolute inset-y-1 left-0 hidden w-1 rounded-r bg-indigo-600 dark:bg-indigo-400"></span>
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-document-text"/></svg>
+          <span class="hidden lg:inline">Contrataciones</span>
+        </a></li>
+        <li><a href="#errores" data-nav="errores" title="Log de errores" aria-label="Log de errores" class="relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 lg:justify-start dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+          <span data-bar class="absolute inset-y-1 left-0 hidden w-1 rounded-r bg-indigo-600 dark:bg-indigo-400"></span>
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-exclamation-triangle"/></svg>
+          <span class="hidden lg:inline">Log de errores</span>
+          <span id="errores-count" class="ml-auto hidden rounded-full bg-red-100 px-2 text-xs font-semibold text-red-800 lg:inline dark:bg-red-900/40 dark:text-red-300">6</span>
+          <span id="errores-dot" class="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500 lg:hidden"></span>
+        </a></li>
+      </ul>
+    </nav>
+
+    <div class="mt-auto hidden items-center gap-3 border-t border-slate-200 p-3 lg:flex dark:border-slate-800">
+      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-200 text-xs font-semibold dark:bg-slate-700">AD</span>
+      <div>
+        <p class="text-xs font-medium">Admin interno</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">soporte@agenthub.io</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido: margen igual al ancho del sidebar -->
+  <div class="pl-16 lg:pl-64">
+    <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-6 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+      <div>
+        <h1 id="page-title" class="text-lg font-semibold">Dashboard</h1>
+        <p id="page-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Resumen de noviembre 2026</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="theme-toggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+          <svg class="h-5 w-5 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-moon"/></svg>
+          <svg class="hidden h-5 w-5 dark:block" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-sun"/></svg>
+        </button>
+        <button type="button" aria-label="Notificaciones" class="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" aria-hidden="true"></span>
+        </button>
+        <span class="ml-1 grid h-8 w-8 place-items-center rounded-full bg-slate-200 text-xs font-semibold dark:bg-slate-700" aria-hidden="true">AD</span>
+      </div>
+    </header>
+
+    <main class="max-w-7xl p-6 lg:p-8">
+      <section id="view-dashboard" aria-labelledby="t-dashboard" class="hidden">
+        <h2 id="t-dashboard" class="sr-only">Dashboard</h2>
+        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+      </section>
+      <section id="view-usuarios" aria-labelledby="t-usuarios" class="hidden">
+        <h2 id="t-usuarios" class="sr-only">Usuarios</h2>
+        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+      </section>
+      <section id="view-agentes" aria-labelledby="t-agentes" class="hidden">
+        <h2 id="t-agentes" class="sr-only">Agentes</h2>
+        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+      </section>
+      <section id="view-skills" aria-labelledby="t-skills" class="hidden">
+        <h2 id="t-skills" class="sr-only">Skills</h2>
+        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+      </section>
+      <section id="view-contrataciones" aria-labelledby="t-contrataciones" class="hidden">
+        <h2 id="t-contrataciones" class="sr-only">Contrataciones</h2>
+        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+      </section>
+      <section id="view-errores" aria-labelledby="t-errores" class="hidden">
+        <h2 id="t-errores" class="sr-only">Log de errores</h2>
+        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+      </section>
+
+      <!-- TEMPORAL (P3.1): verificación del sprite. No enlazada en el nav. Eliminar en P3.2. -->
+      <section id="view-icon-test" aria-labelledby="t-icon-test" class="hidden">
+        <h2 id="t-icon-test" class="sr-only">Prueba de iconos</h2>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-squares-2x2"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">squares-2x2</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-users"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">users</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-cpu-chip"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">cpu-chip</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-puzzle-piece"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">puzzle-piece</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-document-text"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">document-text</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-exclamation-triangle"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">exclamation-triangle</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-banknotes"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">banknotes</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-receipt-percent"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">receipt-percent</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-chart-bar"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">chart-bar</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-information-circle"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">information-circle</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-globe-alt"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">globe-alt</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-document-magnifying-glass"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">document-magnifying-glass</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-calendar-days"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">calendar-days</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-envelope"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">envelope</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-circle-stack"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">circle-stack</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">ellipsis-vertical</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-eye"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">eye</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-trash"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">trash</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-cog-6-tooth"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">cog-6-tooth</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-arrow-down-tray"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">arrow-down-tray</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-check-circle"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">check-circle</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-check"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">check</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-x-circle"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">x-circle</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-x-mark"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">x-mark</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-chevron-down"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">chevron-down</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-moon"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">moon</span></div>
+          <div class="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"><svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-sun"/></svg><span class="text-xs text-slate-500 dark:text-slate-400">sun</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal genérico (contenido por JS en fases siguientes) -->
+  <div id="modal" data-backdrop class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+    <div id="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-xl dark:bg-slate-900 dark:ring-1 dark:ring-slate-800">
+      <div class="flex items-start justify-between border-b border-slate-200 p-5 dark:border-slate-800">
+        <div>
+          <h3 id="modal-title" class="text-lg font-semibold"></h3>
+          <p id="modal-subtitle" class="text-sm text-slate-500 dark:text-slate-400"></p>
+        </div>
+        <button type="button" data-close-modal aria-label="Cerrar" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-x-mark"/></svg>
+        </button>
+      </div>
+      <div id="modal-body" class="p-5"></div>
+      <div id="modal-footer" class="flex justify-end gap-3 border-t border-slate-200 p-4 dark:border-slate-800">
+        <button type="button" data-close-modal class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const body = document.body;
+
+  /* ---------- Tema ---------- */
+  const toggle = document.getElementById('theme-toggle');
+  const syncToggle = () => {
+    const oscuro = root.classList.contains('dark');
+    toggle.setAttribute('aria-pressed', String(oscuro));
+    toggle.setAttribute('aria-label', oscuro ? 'Activar modo claro' : 'Activar modo oscuro');
+  };
+  toggle.addEventListener('click', () => {
+    const oscuro = root.classList.toggle('dark');
+    try { localStorage.setItem('theme', oscuro ? 'dark' : 'light'); } catch (_) {}
+    syncToggle();
+  });
+  syncToggle();
+
+  /* ---------- Dropdown ⋮ (delegación; sin uso todavía) ---------- */
+  const closeMenus = (except) => document.querySelectorAll('[data-dropdown]').forEach(d => {
+    if (d === except) return;
+    d.querySelector('[role=menu]').classList.add('hidden');
+    d.querySelector('[data-dropdown-toggle]').setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-dropdown-toggle]');
+    const dd = t ? t.closest('[data-dropdown]') : null;
+    closeMenus(dd);
+    if (t) {
+      const open = dd.querySelector('[role=menu]').classList.toggle('hidden') === false;
+      t.setAttribute('aria-expanded', String(open));
+    } else if (e.target.closest('[role=menuitem]')) {
+      closeMenus();
+    }
+  });
+
+  /* ---------- Modal (genérico) ---------- */
+  const modal = document.getElementById('modal');
+  let origen = null;
+  const openModal = (btn, { titulo = '', subtitulo = '', ancho = 'max-w-lg', body: html = '', footer } = {}) => {
+    origen = btn || null;
+    document.getElementById('modal-title').textContent = titulo;
+    document.getElementById('modal-subtitle').textContent = subtitulo;
+    document.getElementById('modal-body').innerHTML = html;
+    if (footer !== undefined) document.getElementById('modal-footer').innerHTML = footer;
+    const panel = document.getElementById('modal-panel');
+    panel.className = panel.className.replace(/max-w-\S+/, ancho);
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    body.classList.add('overflow-hidden');
+    modal.querySelector('[data-close-modal]').focus();
+  };
+  const closeModal = () => {
+    if (modal.classList.contains('hidden')) return;
+    modal.classList.add('hidden'); modal.classList.remove('flex');
+    body.classList.remove('overflow-hidden');
+    if (origen) origen.focus();
+    origen = null;
+  };
+  modal.addEventListener('click', e => {
+    if (e.target === modal || e.target.closest('[data-close-modal]')) closeModal();
+  });
+
+  /* ---------- Teclado: Esc cierra modal o menú ---------- */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (!modal.classList.contains('hidden')) { closeModal(); return; }
+    const abierto = document.querySelector('[data-dropdown] [role=menu]:not(.hidden)');
+    if (abierto) {
+      const dd = abierto.closest('[data-dropdown]');
+      closeMenus();
+      dd.querySelector('[data-dropdown-toggle]').focus();
+    }
+  });
+
+  /* ---------- Colapsable con transición (grid-rows) ---------- */
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-collapse-toggle]');
+    if (!b) return;
+    const panel = document.getElementById(b.getAttribute('aria-controls'));
+    const abrir = b.getAttribute('aria-expanded') !== 'true';
+    panel.classList.toggle('grid-rows-[1fr]', abrir);
+    panel.classList.toggle('opacity-100', abrir);
+    panel.classList.toggle('grid-rows-[0fr]', !abrir);
+    panel.classList.toggle('opacity-0', !abrir);
+    const chev = b.querySelector('svg');
+    if (chev) chev.classList.toggle('rotate-180', abrir);
+    b.setAttribute('aria-expanded', String(abrir));
+  });
+
+  /* ---------- Navegación por hash ---------- */
+  const VISTAS = ['dashboard', 'usuarios', 'agentes', 'skills', 'contrataciones', 'errores'];
+  const TEST = 'icon-test'; // temporal, no enlazada
+  const TITULOS = {
+    dashboard: ['Dashboard', 'Resumen de noviembre 2026'],
+    usuarios: ['Usuarios', 'Usuarios de las empresas cliente'],
+    agentes: ['Agentes', 'Agentes desplegados y sus skills'],
+    skills: ['Skills', 'Catálogo de capacidades contratables'],
+    contrataciones: ['Contrataciones', 'Contratos de alquiler de agentes'],
+    errores: ['Log de errores', 'Incidencias técnicas de los agentes'],
+    [TEST]: ['Prueba de iconos', 'Verificación del sprite SVG (temporal)']
+  };
+  const NAV_BASE = 'relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium lg:justify-start';
+  const NAV_IDLE = 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100';
+  const NAV_ACTIVE = 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300';
+
+  const mostrar = () => {
+    let v = location.hash.slice(1);
+    if (v !== TEST && !VISTAS.includes(v)) {
+      v = 'dashboard';
+      history.replaceState(null, '', '#dashboard');
+    }
+    document.querySelectorAll('main > section').forEach(s => {
+      s.classList.toggle('hidden', s.id !== 'view-' + v);
+    });
+    document.querySelectorAll('[data-nav]').forEach(a => {
+      const activo = a.dataset.nav === v;
+      a.className = NAV_BASE + ' ' + (activo ? NAV_ACTIVE : NAV_IDLE);
+      if (activo) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      a.querySelector('[data-bar]').classList.toggle('hidden', !activo);
+    });
+    const [titulo, subtitulo] = TITULOS[v];
+    document.getElementById('page-title').textContent = titulo;
+    document.getElementById('page-subtitle').textContent = subtitulo;
+    document.title = 'AgentHub · ' + titulo;
+    closeMenus();
+    if (!modal.classList.contains('hidden')) closeModal();
+    window.scrollTo(0, 0);
+  };
+  window.addEventListener('hashchange', mostrar);
+  mostrar();
+
+  /* ---------- Contador de errores abiertos (dato real en P3.5) ---------- */
+  const abiertas = 6;
+  const cnt = document.getElementById('errores-count');
+  const dot = document.getElementById('errores-dot');
+  if (abiertas > 0) {
+    cnt.textContent = String(abiertas);
+  } else {
+    cnt.classList.add('hidden'); dot.classList.add('hidden');
+  }
+})();
+</script>
+</body>
+</html>

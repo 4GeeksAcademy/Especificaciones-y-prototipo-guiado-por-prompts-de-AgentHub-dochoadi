@@ -110,7 +110,31 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
 - **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
 - **Errores**: ninguno.
 
-_(pendiente)_
+### P3.1 — Esqueleto de index.html: layout, sprite, tema y navegación (2026-11-18)
+- **Agente/skill**: sesión principal (lectura de `.claude/agents/frontend-builder.md` y `ui-patterns`/`tailwind-vanilla`; no se invocó como subagente) · skills `ui-patterns`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F3, parte 1 (P3.1): esqueleto de index.html. SOLO index.html con el esqueleto: head (charset, viewport, título, CDN Tailwind + darkMode class, script de tema antes de pintar, sin style/CSS externo, fuente del sistema); sprite SVG de los 28 iconos de SPECS; sidebar `w-16 lg:w-64` con 6 enlaces, indicador activo, píldora «6» y pie; topbar sticky con título/subtítulo, toggle de tema, notificaciones y avatar; `<main>` con 6 secciones vacías («Sección en construcción») y navegación por hash; núcleo JS vanilla con delegación (dropdown ⋮, modal genérico, colapsable); sección temporal #icon-test; accesibilidad; autocomprobación con grep, `<symbol>`=28, JS con node --check; servidor en 8000. No hacer commits. SPECS manda.
+- **Salida**: `index.html` (≈ 1 fichero, único; sin HTML adicional). Resultados de la autocomprobación:
+  - `grep -c 'style='` → 0 · `grep '<style|rel="stylesheet"|<link'` → sin resultados.
+  - `<symbol` → **27** (no 28: la lista de SPECS/skill contiene 27 nombres únicos; ver discrepancia abajo).
+  - `<aside>`, `<nav>`, `<header>`, `<main>` → 1 cada uno; `<section>` → 7 (6 vistas + `#icon-test` temporal).
+  - JS: `node --check` sobre el script principal → sintaxis OK.
+  - Servidor `python3 -m http.server 8000` en marcha (http://localhost:8000/index.html → HTTP 200). **No se ha comprobado visualmente** en navegador.
+- **Revisión** (contra `docs/EVALUACION.md`):
+  - E3 parcial: 6 enlaces del sidebar con `href="#…"` y navegación por hash implementada; falta verificar en navegador.
+  - E4 parcial: 0 `style=`, 0 `<style>`, 0 hojas externas. Única carga externa: CDN de Tailwind.
+  - E9 parcial: toggle con `localStorage` y clase `dark` en `<html>`; script de `<head>` para evitar parpadeo.
+  - E11: `aside`, `nav`, `header`, `main`, `section` presentes.
+  - E12 parcial: rail `w-16` en tablet y `lg:w-64`; sin `overflow-x-auto`. Falta captura a 768 px.
+  - Desviaciones registradas:
+    1. **Sprite**: se usó `class="absolute h-0 w-0 overflow-hidden"` en lugar de `class="hidden"` (lo pedido en P3.0). La decisión se tomó **sin probarlo** en navegador, por precaución; se revertirá a `hidden` si la prueba visual lo permite.
+    2. **Títulos**: SPECS S3.1 pide `<h2 class="sr-only">` por sección y `<h1>` solo en el topbar; se siguió SPECS, no el «`<h1>` en cada sección» del prompt.
+    3. **Iconos**: 27 únicos, no 28. Los trazos son **simplificados, escritos a mano**, no los paths oficiales de Heroicons: hay que revisarlos visualmente en #icon-test.
+    4. **Sección extra**: `#icon-test` es la séptima `<section>`; CA-04 exige 6. Se elimina en P3.2.
+- **Decisión**: iterar — pendiente verificación visual en navegador (1440 y 768 px, claro y oscuro) y revertir sprite a `hidden` si pinta bien. Próxima entrada: P3.2 (Dashboard).
+- **Commit**: `feat(F3-layout): sidebar, topbar, modo oscuro y navegación` · _hash: pendiente_
+- **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
+- **Errores**: ninguno registrado (ERR-004 no creado: el fallo del sprite no se ha observado).
 
 ## F4 — QA
 _(pendiente)_

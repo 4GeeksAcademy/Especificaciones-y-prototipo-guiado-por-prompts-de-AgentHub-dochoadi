@@ -28,11 +28,11 @@ Fijar en la spec y no variar:
 | F0 | Estructura Claude + docs | hecho al commitear |
 | F1 | `SPECS.md` (commit propio) | cerrada (`b3b4d64`, tag `F1-spec`) |
 | F2 | Propuesta Google Stitch (`docs/stitch/`) | cerrada (`a5be32d`, tag `F2-stitch`) |
-| F3 | `index.html` | en curso (P3.0: skills alineadas con SPECS) |
+| F3 | `index.html` | en curso (P3.0 skills alineadas; P3.1 esqueleto de `index.html` hecho, pendiente verificación en navegador) |
 | F4 | QA + `docs/EVALUACION.md` | pendiente |
 | F5 | Entrega GitHub público | pendiente |
 
-**Último commit/tag**: `a5be32d` `docs(F2): adaptación de Stitch a la spec` · tag `F2-stitch` · **Próximo paso**: P3.1 — layout, sprite SVG, modo oscuro y navegación en `index.html` (agente `frontend-builder`; `SPECS.md` manda, recetas en `docs/stitch/adaptacion.md`). Orden F3: layout → Dashboard → Usuarios → Agentes → Skills → Contrataciones → Log, verificando en navegador tras cada sección.
+**Último commit/tag**: `a5be32d` `docs(F2): adaptación de Stitch a la spec` · tag `F2-stitch` · **Hecho sin commit**: P3.0 (skills alineadas) y P3.1 (`index.html` esqueleto; sección `#icon-test` temporal). **Próximo paso**: P3.2 — Dashboard (eliminar `#icon-test` al empezar); verificar antes en navegador el layout de P3.1 y el sprite (`hidden` vs `absolute h-0 w-0`).
 Reanudar sesión: `docs/RETOMAR.md`.
 
 Detalle en `docs/FASES.md`. Evaluación en `docs/EVALUACION.md`. Errores en `docs/ERRORES.md`.
