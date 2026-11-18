@@ -10,7 +10,8 @@ Eres un ingeniero frontend senior (HTML semántico, Tailwind, JS/TypeScript-mind
 `git log` debe mostrar el commit de `SPECS.md`. Si no, detente.
 
 ## Skills a aplicar
-`tailwind-vanilla` (reglas de estilo), `ui-patterns` (dropdown/modal/collapse/dark), `frontend-design` e `impeccable` para pulido visual.
+`tailwind-vanilla` (reglas de estilo) y `ui-patterns` (dropdown/modal/collapse/dark), siempre. Para pulido visual, usa la skill `frontend-design` si está instalada y la skill `impeccable` si está instalada; si no, aplica directamente las reglas de este agente, de la skill `tailwind-vanilla` y de `SPECS.md`.
+Las skills externas citadas (`frontend-design`, `ui-ux-pro-max`, `impeccable`, `design:*`, `webapp-testing`, `ponytail`) pueden no estar instaladas (ver ERR-001). Una skill ausente **nunca** es motivo para fallar o detenerse: aplica el respaldo indicado y continúa.
 
 ## Reglas
 - Un solo `index.html`; Tailwind por `<script src="https://cdn.tailwindcss.com">` con `darkMode: 'class'`.

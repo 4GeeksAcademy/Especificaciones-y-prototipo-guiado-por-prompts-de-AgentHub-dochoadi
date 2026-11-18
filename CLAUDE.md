@@ -27,4 +27,4 @@ Antes de terminar una sesión o fase: actualizar el estado en `CONTEXT.md`, regi
 
 ## Skills propias (`.claude/skills/`)
 `spec-driven`, `tailwind-vanilla`, `ui-patterns`, `phase-logger`, `error-tracker`, `git-workflow`.
-Skills instaladas a reutilizar: `frontend-design`, `ui-ux-pro-max`, `impeccable`, `design:accessibility-review`, `design:design-critique`, `webapp-testing`, `ponytail`.
+Skills externas **opcionales** (usar solo si están instaladas; en este Codespace no lo están, ver ERR-001): `frontend-design`, `ui-ux-pro-max`, `impeccable`, `design:accessibility-review`, `design:design-critique`, `webapp-testing`, `ponytail`. Si faltan, aplicar las reglas del agente, de `tailwind-vanilla` y de `SPECS.md`; nunca detenerse por una skill ausente.

@@ -26,7 +26,7 @@ Toda clase de color lleva su par: `bg-white dark:bg-slate-900`, `text-slate-900 
 
 Badge base: `inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium`.
 Tarjeta: `rounded-xl border bg-white p-5 shadow-sm dark:bg-slate-900`.
-Tabla: contenedor `overflow-x-auto`, `thead` con `text-xs uppercase text-slate-500`, filas `hover:bg-slate-50 dark:hover:bg-slate-800/50`.
+Tabla: contenedor `overflow-x-auto`, `thead` con `text-xs uppercase text-slate-500`, filas `hover:bg-slate-50 dark:hover:bg-slate-800/50`. Si la fila contiene dropdowns ⋮, no uses overflow-x-auto (recortaría el menú): dimensiona las columnas para 768 px (ver SPECS.md).
 
 ## Responsive
 Sidebar: `w-64 hidden lg:flex` + versión compacta iconos `md:w-16` para tablet. Grids: `grid-cols-1 sm:grid-cols-2 xl:grid-cols-4`.
