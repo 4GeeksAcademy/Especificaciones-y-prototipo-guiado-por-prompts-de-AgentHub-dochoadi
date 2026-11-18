@@ -43,12 +43,33 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - Verificado a mano: aritmética de contratos e ingresos, contadores por estado/skill/empresa, errores solo de agentes permitidos.
   - Huecos/supuestos a vigilar: se añadió un 6.º contrato CT-06 Globex–Vega (activo), no pedido explícitamente; los descuentos no restan del importe de los contratos; "Eliminar" usa `confirm()` nativo; las tablas no usan `overflow-x-auto` (se diseñan para caber en 768 px), lo que se desvía de la skill `tailwind-vanilla`.
 - **Decisión**: aceptada (pendiente de revisión del usuario de los supuestos anteriores).
-- **Commit**: `docs(F1): añade SPECS.md` · _hash: pendiente_
+- **Commit**: `docs(F1): añade SPECS.md` · `b3b4d64`
 - **Tag**: `F1-spec`
 - **Errores**: ninguno.
 
 ## F2 — Google Stitch
-_(pendiente)_
+
+### P2.1 — Corrección ERR-001 y prompts de Google Stitch (2026-11-18)
+- **Agente/skill**: sesión principal (tarea A) · `stitch-prompter` como subagente (tarea B) · skills `tailwind-vanilla`, `error-tracker`, `phase-logger`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F2, parte 1 (P2.1). Lee CLAUDE.md, CONTEXT.md, docs/GIT.md y SPECS.md. No crees HTML. No hagas commits.
+  > TAREA A — Corregir ERR-001: las skills frontend-design, ui-ux-pro-max, impeccable, design:accessibility-review, design:design-critique, webapp-testing y ponytail no están instaladas en el Codespace. En stitch-prompter, frontend-builder, ux-reviewer y qa-evaluator, cada referencia debe decir "usa la skill X si está instalada; si no, aplica directamente las reglas de este agente, de la skill tailwind-vanilla y de SPECS.md"; el agente no debe detenerse por una skill ausente. qa-evaluator: alternativa grep + revisión manual guiada, Playwright solo si está disponible. En tailwind-vanilla (línea Tabla): sin overflow-x-auto si hay dropdowns ⋮; dimensionar para 768 px. Añadir ERR-001 (F2) y ERR-002 (F1, agentes no visibles como subagentes) a docs/ERRORES.md.
+  > TAREA B — Con stitch-prompter, crear docs/stitch/prompt.md: Prompt 0 (sistema de diseño y layout global: sidebar con 6 ítems y estado activo, topbar con toggle claro/oscuro, slate + indigo + semáforo emerald/amber/red, versión clara y oscura) y Prompts 1–6 (uno por pantalla, con datos reales de SPECS.md, ⋮ abierto en una fila, badges, skills expandidas en un agente y el modal/tarjeta de detalle principal). Cada prompt ≤ 1.500 caracteres, autocontenido, estilo en inglés y etiquetas en español. Secciones finales "Cómo usarlos" y "Qué NO copiar de Stitch".
+  > CIERRE: entrada P2.1; hash b3b4d64 y tag F1-spec en P1.1; CONTEXT.md con F1 cerrada, F2 en curso y próximo paso P2.2. No tocar otros ficheros ni crear tag.
+- **Salida**:
+  - Tarea A: los 4 agentes con referencias condicionales y apartado "Skills opcionales" (`.claude/agents/*.md`); `qa-evaluator` y `ux-reviewer` con alternativa grep + revisión manual guiada; regla de tablas en `.claude/skills/tailwind-vanilla/SKILL.md`; ERR-001 y ERR-002 en `docs/ERRORES.md`. A petición posterior del usuario, `CLAUDE.md` deja de decir que esas skills están "instaladas" y las marca como opcionales.
+  - Tarea B: `docs/stitch/prompt.md` (153 líneas): dirección visual, Prompts 0–6, "Cómo usarlos" (orden 0→6; capturas `00-global.png` … `06-errores.png`, oscuras con sufijo `-dark`) y "Qué NO copiar de Stitch". Longitud medida por script: 1.329 · 1.242 · 1.463 · 1.471 · 1.466 · 1.460 · 1.443 caracteres (todos ≤ 1.500).
+  - Datos recortados para caber en el límite: emails de usuarios como regla con ejemplo, descripciones de skills a inventar por Stitch, skills de contratos por ID, solo LOG-006 con descripción y extracto de traza. Se corrige en F3 desde SPECS.md (la captura es guía visual, no fuente de datos).
+- **Revisión** (contra `docs/EVALUACION.md`):
+  - Requisito B "propuesta Google Stitch usada como guía": en curso (faltan ejecución, capturas y `adaptacion.md` en P2.2).
+  - E1 se mantiene: no hay ningún `.html` en el repo.
+  - E10: los importes y nombres de los prompts coinciden con SPECS.md §10 (comprobado CT-01…CT-06, 245,00 €, 31,50 €, subtotales del desglose de CT-01).
+  - E12: el layout de tablet (rail de iconos de 64 px, sin `overflow-x-auto`) se pide en el Prompt 0, coherente con S3.7.
+  - Huecos: P2.2 debe revisar que Stitch no meta datos inventados ni un menú hamburguesa en tablet.
+- **Decisión**: aceptada.
+- **Commit**: `fix(F2): ERR-001 skills opcionales en agentes` + `docs(F2): prompt y propuesta visual de Stitch` · _hash: pendiente_
+- **Tag**: — (F2 sigue abierta; `F2-stitch` al cerrar P2.2)
+- **Errores**: ERR-001, ERR-002.
 
 ## F3 — Construcción
 _(pendiente)_
