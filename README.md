@@ -1,41 +1,32 @@
-# HTML Hello
+# AgentHub — Prototipo del Panel de Administración
 
-The most basic boilerplate for any 4Geeks Academy student, start your very first website from scratch.
+Prototipo HTML (Tailwind CDN + JavaScript vanilla) del panel interno de **AgentHub**, plataforma SaaS de alquiler de agentes de IA. Proyecto guiado por especificación (*Vision to spec*).
 
-> There is a video tutorial on [how to use this template to create your very first website here](https://youtu.be/dfbDCMu_p-0).
+## Secciones
+Dashboard · Gestión de usuarios · Gestión de agentes · Skills · Contrataciones · Log de errores — con modo claro/oscuro, dropdowns de acciones, modales y listas colapsables. Datos 100 % hardcodeados.
 
-## What to do next?
+## Flujo de trabajo
+1. `SPECS.md` (commit propio, antes de cualquier HTML)
+2. Propuesta visual en [Google Stitch](https://stitch.withgoogle.com/) → `docs/stitch/`
+3. Construcción de `index.html` adaptando la propuesta a la spec
+4. QA y evaluación → `docs/EVALUACION.md`
 
-Create an `index.html` file with the [basic HTML structure](http://4geeks.com/lesson/what-is-html-learn-html#page-structure) and see it live by running a web-server using the following command:
+## Estructura
+| Ruta | Contenido |
+|---|---|
+| `CLAUDE.md` | Reglas del proyecto para Claude |
+| `CONTEXT.md` | Producto, stack, dataset maestro, estado |
+| `SPECS.md` | Especificación (contrato con el código) |
+| `index.html` | Prototipo |
+| `.claude/agents/` | spec-writer, stitch-prompter, frontend-builder, ux-reviewer, qa-evaluator |
+| `.claude/skills/` | spec-driven, tailwind-vanilla, ui-patterns, phase-logger, error-tracker, git-workflow |
+| `docs/FASES.md` | Plan por fases y checklists |
+| `docs/GIT.md` | Nomenclatura de commits y tags por fase |
+| `docs/CODESPACE.md` | Flujo de trabajo en GitHub Codespaces |
+| `docs/RETOMAR.md` | Prompt para reanudar el proyecto en otra sesión |
+| `docs/PROMPTS.md` | Bitácora de prompts y salidas |
+| `docs/EVALUACION.md` | Matriz de criterios con evidencia |
+| `docs/ERRORES.md` | Registro de errores y soluciones |
 
-```bash
-$ pip3 install flask && python3 server.py
-```
-
-- You can create as many HTML files as you want.
-- You can also create CSS files and import them into your website using a `<link>` tag placed between the `<head></head>` tags, like this:
-
-```html
-<head>
-  ...
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  ...
-</head>
-```
-
-- If you want to use Tailwind CSS, add it optionally via the official Tailwind CSS v4 CDN inside the same `<head>`:
-
-```html
-<head>
-  ...
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  ...
-</head>
-```
-
-### Contributors
-
-This template was built as part of the [Full Stack Developer course](https://4geeksacademy.com/us/coding-bootcamps/part-time-full-stack-developer) at [4Geeks Academy Coding Bootcamp](https://4geeksacademy.com/us/coding-bootcamp) by [Alejandro Sanchez](https://twitter.com/alesanchezr) and [many other contributors](https://github.com/4GeeksAcademy/html-hello/graphs/contributors).
-
-You can find other templates and resources like this at the [school's GitHub page](https://github.com/4geeksacademy/).
+## Ejecutar
+Abrir `index.html` en el navegador (no requiere servidor ni build).

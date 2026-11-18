@@ -1,0 +1,11 @@
+{
+  "name": "AgentHub Panel",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "forwardPorts": [8000],
+  "portsAttributes": { "8000": { "label": "Prototipo", "onAutoForward": "openPreview" } },
+  "customizations": {
+    "vscode": {
+      "extensions": ["bradlc.vscode-tailwindcss", "ritwickdey.LiveServer", "anthropic.claude-code"]
+    }
+  }
+}
