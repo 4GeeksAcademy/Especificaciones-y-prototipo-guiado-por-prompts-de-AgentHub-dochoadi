@@ -67,7 +67,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - E12: el layout de tablet (rail de iconos de 64 px, sin `overflow-x-auto`) se pide en el Prompt 0, coherente con S3.7.
   - Huecos: P2.2 debe revisar que Stitch no meta datos inventados ni un menú hamburguesa en tablet.
 - **Decisión**: aceptada.
-- **Commit**: `fix(F2): ERR-001 skills opcionales en agentes` + `docs(F2): prompt y propuesta visual de Stitch` · _hash: pendiente_
+- **Commit**: `fix(F2): ERR-001 agentes no dependen de skills no instaladas` · `211eabf` + `docs(F2): prompts de Google Stitch derivados de SPECS.md` · `3ebe8f3`
 - **Tag**: — (F2 sigue abierta; `F2-stitch` al cerrar P2.2)
 - **Errores**: ERR-001, ERR-002.
 
@@ -90,11 +90,26 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - E12: rail `w-16 lg:w-64`, sin `overflow-x-auto`, columna Precio/mes oculta en tablet.
   - Huecos: sin capturas de Stitch; el sprite SVG debe validarse visualmente en F3; la skill `ui-patterns` difiere de SPECS en detalles (ver sección 6 de `adaptacion.md`).
 - **Decisión**: aceptada (F2 completada).
-- **Commit**: `docs(F2): adaptación de Stitch a la spec` · _hash: pendiente_
-- **Tag**: `F2-stitch` · _pendiente_
+- **Commit**: `docs(F2): adaptación de Stitch a la spec` · `a5be32d`
+- **Tag**: `F2-stitch`
 - **Errores**: ERR-003.
 
 ## F3 — Construcción
+
+### P3.0 — Alinear skills y agente con SPECS.md (2026-11-18)
+- **Agente/skill**: sesión principal · skills `ui-patterns`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F3, parte 0 (P3.0): preparación. Lee CLAUDE.md, CONTEXT.md, docs/GIT.md, SPECS.md, docs/stitch/adaptacion.md (sección 6) y las skills ui-patterns y tailwind-vanilla. No crees HTML. No hagas commits. SPECS.md manda.
+  > TAREA A — (1) Editar ui-patterns y tailwind-vanilla para que no contradigan SPECS (backdrop, dropdown, colapsable, cierres, tema, navegación, paleta de badges §11, tablas sin overflow-x-auto). (2) Añadir a ui-patterns «Iconos: sprite SVG inline» (`<symbol id="i-…">` en `<svg class="hidden">`, `<use href>` en uso) con la lista de iconos de SPECS. (3) Revisar frontend-builder: sprite, orden P3.1 layout → Dashboard → Usuarios → Agentes → Skills → Contrataciones → Log, verificación en navegador tras cada sección. (4) grep de `style=` y `<style` en skills y agentes: solo como prohibición.
+  > TAREA B — Hashes pendientes: P2.1 → 211eabf y 3ebe8f3; P2.2 → a5be32d, tag F2-stitch; ERR-001/002 → 211eabf; ERR-003 → a5be32d; CONTEXT: F2 cerrada, F3 en curso, próximo paso P3.1.
+  > CIERRE — Entrada P3.0; commit previsto «docs(F3): alinea skills con SPECS.md», sin tag. No tocar otros ficheros ni crear HTML.
+- **Salida**: `ui-patterns/SKILL.md` y `tailwind-vanilla/SKILL.md` reescritos según SPECS: backdrop `bg-slate-900/60 backdrop-blur-sm`, dropdown `w-48` con apertura hacia arriba en las 2 últimas filas, Esc con foco al ⋮, modal con `hidden`↔`flex`, `overflow-hidden` en `body` y foco, colapsable `grid-rows` + `opacity` con `aria-controls`, tema en `<html>` con `try/catch` y `aria-pressed/label`, navegación por hash, paleta de badges §11 (8 variantes), tablas sin `overflow-x-auto`, sidebar `w-16 lg:w-64`. Nueva sección «Iconos: sprite SVG inline» con los 28 iconos exigidos. `frontend-builder.md` con sprite, orden de trabajo y parada de verificación tras cada sección. Registrados los hashes de F2.
+- **Revisión** (contra `docs/EVALUACION.md`): prepara E4 (sin `style`/CSS externo), E5–E8 (patrones dropdown/modal/colapsable alineados con CA-15…27), E9 (tema) y E12 (tablet). Sin HTML en el repo: E1 intacto. Huecos: el sprite con `<svg class="hidden">` (display:none) debe validarse visualmente en P3.1; la skill propone `absolute h-0 w-0 overflow-hidden` como respaldo.
+- **Decisión**: aceptada.
+- **Commit**: `docs(F3): alinea skills con SPECS.md` · _hash: pendiente_
+- **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
+- **Errores**: ninguno.
+
 _(pendiente)_
 
 ## F4 — QA

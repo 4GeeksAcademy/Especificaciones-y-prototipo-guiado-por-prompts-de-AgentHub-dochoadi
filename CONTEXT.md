@@ -27,12 +27,12 @@ Fijar en la spec y no variar:
 |---|---|---|
 | F0 | Estructura Claude + docs | hecho al commitear |
 | F1 | `SPECS.md` (commit propio) | cerrada (`b3b4d64`, tag `F1-spec`) |
-| F2 | Propuesta Google Stitch (`docs/stitch/`) | completada (P2.1 prompts, P2.2 `docs/stitch/adaptacion.md`); a falta de commit y tag `F2-stitch` |
-| F3 | `index.html` | pendiente |
+| F2 | Propuesta Google Stitch (`docs/stitch/`) | cerrada (`a5be32d`, tag `F2-stitch`) |
+| F3 | `index.html` | en curso (P3.0: skills alineadas con SPECS) |
 | F4 | QA + `docs/EVALUACION.md` | pendiente |
 | F5 | Entrega GitHub público | pendiente |
 
-**Último commit/tag**: `3ebe8f3` `docs(F2): prompts de Google Stitch derivados de SPECS.md` · tag `F1-spec` · pendiente: commit `docs(F2): adaptación de Stitch a la spec` y tag `F2-stitch` · **Próximo paso**: F3 — `frontend-builder` construye `index.html` desde `SPECS.md` (manda) usando `docs/stitch/adaptacion.md` (recetas Tailwind, decisiones). Antes de empezar F3, hacer el commit y el tag de F2.
+**Último commit/tag**: `a5be32d` `docs(F2): adaptación de Stitch a la spec` · tag `F2-stitch` · **Próximo paso**: P3.1 — layout, sprite SVG, modo oscuro y navegación en `index.html` (agente `frontend-builder`; `SPECS.md` manda, recetas en `docs/stitch/adaptacion.md`). Orden F3: layout → Dashboard → Usuarios → Agentes → Skills → Contrataciones → Log, verificando en navegador tras cada sección.
 Reanudar sesión: `docs/RETOMAR.md`.
 
 Detalle en `docs/FASES.md`. Evaluación en `docs/EVALUACION.md`. Errores en `docs/ERRORES.md`.
