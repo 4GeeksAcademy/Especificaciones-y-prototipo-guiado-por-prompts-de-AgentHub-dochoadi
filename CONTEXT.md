@@ -27,12 +27,12 @@ Fijar en la spec y no variar:
 |---|---|---|
 | F0 | Estructura Claude + docs | hecho al commitear |
 | F1 | `SPECS.md` (commit propio) | cerrada (`b3b4d64`, tag `F1-spec`) |
-| F2 | Propuesta Google Stitch (`docs/stitch/`) | en curso (P2.1: prompts en `docs/stitch/prompt.md`) |
+| F2 | Propuesta Google Stitch (`docs/stitch/`) | completada (P2.1 prompts, P2.2 `docs/stitch/adaptacion.md`); a falta de commit y tag `F2-stitch` |
 | F3 | `index.html` | pendiente |
 | F4 | QA + `docs/EVALUACION.md` | pendiente |
 | F5 | Entrega GitHub público | pendiente |
 
-**Último commit/tag**: `b3b4d64` `docs(F1): añade SPECS.md` · tag `F1-spec` · **Próximo paso**: P2.2 — ejecutar los prompts de `docs/stitch/prompt.md` en Stitch y guardar las capturas en `docs/stitch/`.
+**Último commit/tag**: `3ebe8f3` `docs(F2): prompts de Google Stitch derivados de SPECS.md` · tag `F1-spec` · pendiente: commit `docs(F2): adaptación de Stitch a la spec` y tag `F2-stitch` · **Próximo paso**: F3 — `frontend-builder` construye `index.html` desde `SPECS.md` (manda) usando `docs/stitch/adaptacion.md` (recetas Tailwind, decisiones). Antes de empezar F3, hacer el commit y el tag de F2.
 Reanudar sesión: `docs/RETOMAR.md`.
 
 Detalle en `docs/FASES.md`. Evaluación en `docs/EVALUACION.md`. Errores en `docs/ERRORES.md`.

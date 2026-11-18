@@ -71,6 +71,29 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
 - **Tag**: — (F2 sigue abierta; `F2-stitch` al cerrar P2.2)
 - **Errores**: ERR-001, ERR-002.
 
+### P2.2 — Adaptación de Stitch a la spec (2026-11-18)
+- **Agente/skill**: sesión principal · skills `phase-logger`, `error-tracker`, `ui-patterns`, `tailwind-vanilla`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F2, parte 2 (P2.2). Lee CLAUDE.md, CONTEXT.md, SPECS.md y todos los .md de docs/stitch/ (los .png son opcionales). No crees HTML. No hagas commits. SPECS.md manda sobre Stitch.
+  > TAREA A — Tabla «Discrepancias» en docs/stitch/adaptacion.md: md de Stitch vs SPECS.md (datos, textos de UI, acciones de dropdown, campos de modales), ✅/❌ y qué prevalece; incluir fallos ya anotados (Atlas «Skills (4)» → 2; «15 skills» → 13; Usuarios oscuro que no es oscuro).
+  > TAREA B — «Propuesta Stitch → decisión» (Elemento | Stitch | Decisión | Motivo): tokens Material, `<style>`/`style=""`/`onclick`, Google Fonts y Material Symbols, dark como pantallas separadas, dropdowns y modales abiertos, skills de Orion desplegadas, sidebar `w-64`, extras fuera de spec, `overflow-x-auto`, `animate-in`, marca «Consola Admin».
+  > TAREA C — «Recetas Tailwind (claro + dark:)»: sidebar, topbar con toggle, tarjeta de métrica, 9 badges, fila con dropdown ⋮ cerrado y abierto, modal, skills colapsable, desglose de contrato.
+  > TAREA D — «Datos que faltan para F3»: modal de 7 usuarios, prompt de cada agente, permisos de cada skill, desglose de 6 contratos, traza de 8 entradas; indicar § de SPECS o si hay que añadirlo.
+  > CIERRE: entrada P2.2 en PROMPTS.md, ERR-003 en ERRORES.md, lista de ficheros de stitch, CONTEXT.md → F2 completada y próximo paso F3. No tocar otros ficheros ni crear HTML.
+- **Salida**: `docs/stitch/adaptacion.md` con 4 secciones: Discrepancias (datos, textos/shell, dropdowns, modales, fallos consolidados, diferencias skill `ui-patterns` vs SPECS), Propuesta → decisión (≈ 45 filas), Recetas Tailwind (9 bloques HTML sin `style`) y Datos que faltan. Decisiones clave: paleta Tailwind estándar con pares `dark:` (SPECS §11 manda sobre `00-global.md` en badges); fuente del sistema (`font-sans`/`font-mono`); iconos con sprite SVG inline `<symbol>/<use>` (alternativa: diccionario JS de paths); todos los extras de Stitch descartados; sidebar `w-16 lg:w-64`. No se ha creado HTML ni se han tocado otros ficheros salvo los de cierre.
+  Hallazgo: **SPECS.md ya define todos los datos** que Stitch no trae (§10.1–§10.5, S5.4, S8.4); no hay que ampliar la spec. Los `.png` no existen en el repo; el análisis usa solo los md. Se eliminó `docs/stitch/README.md` (duplicaba el README raíz); su índice pasa a `adaptacion.md`.
+- **Revisión** (contra `docs/EVALUACION.md`):
+  - Requisito B «propuesta Google Stitch usada como guía»: cubierto con `prompt.md`, md de Stitch y `adaptacion.md`.
+  - E4: decisiones que evitan `<style>`, `style=`, hojas externas y `element.style` (verificación futura: `grep -nE 'style=|<style|rel="stylesheet"|\.style\.' index.html` → 0).
+  - E5–E8: dropdown/modal/colapsable arrancan cerrados; recetas alineadas con S6.3, §11.3, §11.4.
+  - E10: datos de Stitch contrastados con SPECS §10; incoherencias detectadas (Atlas 4 skills, 15 skills, descripciones del Log, LOG-003 con skill que Nova no tiene).
+  - E12: rail `w-16 lg:w-64`, sin `overflow-x-auto`, columna Precio/mes oculta en tablet.
+  - Huecos: sin capturas de Stitch; el sprite SVG debe validarse visualmente en F3; la skill `ui-patterns` difiere de SPECS en detalles (ver sección 6 de `adaptacion.md`).
+- **Decisión**: aceptada (F2 completada).
+- **Commit**: `docs(F2): adaptación de Stitch a la spec` · _hash: pendiente_
+- **Tag**: `F2-stitch` · _pendiente_
+- **Errores**: ERR-003.
+
 ## F3 — Construcción
 _(pendiente)_
 
