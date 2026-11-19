@@ -133,6 +133,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
     4. **Sección extra**: `#icon-test` es la séptima `<section>`; CA-04 exige 6. Se elimina en P3.2.
 - **Decisión**: iterar — pendiente verificación visual en navegador (1440 y 768 px, claro y oscuro) y revertir sprite a `hidden` si pinta bien. Próxima entrada: P3.2 (Dashboard).
   - **Actualización (P3.2b, 2026-11-19)**: la decisión del sprite es **definitiva**: `class="absolute h-0 w-0 overflow-hidden"`. **No se revierte a `hidden`** (evita el riesgo conocido de los sprites con `display:none`, que pueden romper referencias internas como gradientes o máscaras, sin coste visual ni de accesibilidad).
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-layout): sidebar, topbar, modo oscuro y navegación` · `b91ee39`
 - **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
 - **Errores**: ninguno registrado (ERR-004 no creado: el fallo del sprite no se ha observado).
@@ -160,6 +161,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **No verificado en navegador**: no hay navegador en el Codespace y la instalación de Playwright/Chromium fue denegada por permisos. A 768 px, por cálculo: 768 − 64 (rail) − 48 (padding) = 656 px → 2 columnas de 316 px, sin scroll horizontal. Pendiente comprobar visualmente: 1440/768 px, claro/oscuro, CA-13 y CA-14 (clic → #errores), y el sprite (`absolute h-0 w-0` vs `hidden`, arrastrado de P3.1).
 - **Revisión** (contra `docs/EVALUACION.md`): E3 deja de fallar por la séptima sección (CA-04 → 6). E4 ✅ por grep. E9: todas las clases nuevas con par `dark:`. E10: Dashboard calculado desde el mismo dataset que usarán Agentes y Contrataciones. E11: `article`, `a`, `section`. E12 pendiente de capturas.
 - **Decisión**: aceptada a falta de la verificación visual.
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-dashboard): tarjetas de métricas y placeholder de gráfico` · `c4aea9f`
 - **Tag**: — (F3 sigue abierta)
 - **Errores**: ninguno registrado (la falta de navegador se registra como ERR-004 en P3.2b).
@@ -207,6 +209,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Verificación manual en navegador (actualización P3.3b, 2026-11-19)**: **pendiente**. El prompt P3.3b no incluía el resultado (el marcador «[PEGA AQUÍ…]» llegó sin rellenar); no se da por verificado. Anotar aquí el resultado cuando el usuario lo aporte (Ports → 8000: 1440/768 px, claro/oscuro). En P3.4 se volvió a pedir la anotación y el marcador llegó otra vez sin rellenar: sigue **pendiente**.
 - **Revisión** (contra `docs/EVALUACION.md`): E5 ⚠️ (dropdown completo en Usuarios; faltan 4 secciones). E6 ⚠️ (modal «Ver detalle» en 1 de 4 secciones). E7 ⚠️ (cierre con botón, ✕, backdrop y Esc probado en DOM simulado; falta navegador). E10 ⚠️ (`USUARIOS` coherente con §10.3; agentes por empresa calculados desde `AGENTES`). E11 ⚠️ (primera `<table>` con `<thead>`/`<tbody>` y `th scope`; faltan 4). E4 sigue ✅.
 - **Decisión**: aceptada a falta de la verificación visual manual.
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-usuarios): tabla, dropdown y modal` · `9b370ba`
 - **Tag**: — (F3 sigue abierta)
 - **Errores**: ninguno nuevo (ERR-004 sigue mitigado).
@@ -257,6 +260,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
 - **Revisión** (contra `docs/EVALUACION.md`): E5 ⚠️ (2 de 5 secciones). E6 ⚠️ (sin cambio en «Ver detalle»; «Configurar» en Agentes ya cumple su parte de CA-20). E7 ⚠️ (2 modales). E8 ⚠️ (colapsable implementado y probado en DOM simulado; falta ver la transición). E10 ⚠️ (skills por nombre desde `SKILLS`; borrado sin efectos en otras secciones). E11 ⚠️ (2 de 5 tablas). E4 sigue ✅. `docs/EVALUACION.md` no se toca en este prompt (se sincroniza en el siguiente docs).
 - **Decisión**: aceptada a falta de la verificación visual manual.
 - **Verificación manual en navegador (actualización en P3.5, 2026-11-19)**: **pendiente**. El prompt de P3.5–P3.7 pedía anotarla, pero el marcador «[escribe aquí…]» llegó sin rellenar; no se da por verificado.
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-agentes): skills colapsables y configurar` · `e1d95c5`
 - **Tag**: — (F3 sigue abierta)
 - **Errores**: ninguno nuevo (ERR-004 sigue mitigado).
@@ -300,6 +304,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
 - **Revisión**: E5 ⚠️ (3 de 5 secciones). E6 ⚠️ (2 de 4 «Ver detalle»). E7 ⚠️ (3 modales). E10 ⚠️ (descripciones y permisos literales; recuentos calculados). E11 ⚠️ (3 de 5 tablas). E4 sigue ✅.
 - **Decisión**: aceptada a falta de la verificación visual manual.
 - **Actualización en P3.6**: la prueba `test-skills.js` se amplió para comprobar Contrataciones tras eliminar «Navegación web» (CT-01 sigue mostrando el chip, 660,00 € en la tabla y en el `tfoot` del modal) → **105 OK · 0 fallos**.
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-skills): catálogo, modal y eliminar` · `b213a33`
 - **Tag**: —
 - **Errores**: ninguno nuevo.
@@ -340,6 +345,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Sin verificar en navegador (ERR-004)**: que la tabla quepa a 768 px con Fin bajo Inicio (CA-10), menús de las 2 últimas filas sin recortar (CA-19), aspecto del modal con tabla de desglose, claro/oscuro (CA-40).
 - **Revisión**: E5 ⚠️ (4 de 5 secciones). E6 ⚠️ (3 de 4 «Ver detalle»). E7 ⚠️ (4 modales). E10 ⚠️ (importes calculados y coherentes con Agentes, Skills y Dashboard). E11 ⚠️ (4 de 5 tablas + tabla de desglose con `caption`, `thead`, `tbody`, `tfoot` y `th scope="row"`). E4 sigue ✅.
 - **Decisión**: aceptada a falta de la verificación visual manual.
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-contrataciones): tabla y desglose` · `3e4116b`
 - **Tag**: —
 - **Errores**: ninguno nuevo.
@@ -385,6 +391,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Sin verificar en navegador (ERR-004)**: legibilidad de los 4 colores de gravedad y del resaltado crítico en claro/oscuro (CA-35, CA-40), `<pre>` con scroll interno, `disabled` real del menú, desaparición de la píldora (1440 px) y del punto (768 px), y ancho a 768 px: por cálculo ≈ 638 de 656 px (la columna Descripción queda estrecha y con varias líneas).
 - **Revisión**: E5 ⚠️ (5 de 5 secciones en DOM simulado). E6 ⚠️ (4 de 4 «Ver detalle» + Configurar). E7 ⚠️ (5 modales). E10 ⚠️ (`ERRORES` completo; contador del sidebar calculado). E11 ⚠️ (5 de 5 tablas). E4 sigue ✅. Pendiente solo la verificación visual.
 - **Decisión**: aceptada a falta de la verificación visual manual.
+- **Verificación manual en navegador (registrada en F4, 2026-11-19)**: el usuario confirma «todo se ve bien» tras revisar el prototipo en el puerto 8000 (pestaña Ports) a **1440 y 768 px**, en **claro y oscuro**. Sustituye a las anotaciones «pendiente» anteriores (ERR-004).
 - **Commit**: `feat(F3-log): errores, trazas y resolver` · `ea5fd3d`
 - **Tag**: — (`F3-build` solo tras la verificación del usuario en navegador)
 - **Errores**: ninguno nuevo.
@@ -415,12 +422,65 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   Total: **569 comprobaciones en DOM simulado, 0 fallos**. Otros datos: `dark:` → 151 · `fetch(`/XHR → 0 · `<table` → 6 (5 listados + desglose del modal). El repo no contiene `package.json` ni `node_modules` (jsdom y las pruebas viven solo en el scratchpad de la sesión).
 - **Salida**: esta entrada; `CONTEXT.md` (F3 construida; pendiente verificación manual y tag `F3-build`; próximo paso F4); `docs/EVALUACION.md` (E3, E5–E11 actualizados, fila nueva en C).
 - **Decisión**: F3 construida. **No se crea el tag `F3-build`**: queda a la espera de la verificación del usuario en navegador (ERR-004).
-- **Commit**: `docs(F3): cierra construcción y sincroniza evaluación` · _hash: se anota en el siguiente commit de docs_
-- **Tag**: —
+- **Commit**: `docs(F3): cierra construcción y sincroniza evaluación` · `32504d5`
+- **Tag**: `F3-build` (creado por el usuario sobre `32504d5` tras su verificación en navegador; anotado, también en `origin`)
 - **Errores**: ninguno nuevo. ERR-004 sigue mitigado: P3.1–P3.7 sin verificación manual registrada (el marcador del prompt llegó vacío en P3.3b, P3.4 y P3.5).
 
 ## F4 — QA
-_(pendiente)_
+
+### P4.1 — Revisión UX/accesibilidad (ux-reviewer) y correcciones fix(F4) (2026-11-19)
+- **Agente/skill**: subagente `ux-reviewer` (solo lectura) · correcciones en la sesión principal · skills `error-tracker`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; el mismo prompt cubre F4 y F5):
+  > Fases F4 (QA) y F5 (entrega). NO modifiques SPECS.md. Usa ux-reviewer y qa-evaluator. PASO 0: árbol limpio y tag F3-build; anotar en P3.1–P3.7 la verificación manual del usuario («todo se ve bien», 1440/768 px, claro/oscuro) y los hashes que falten. COMMITS: fix(F4) uno por corrección (cita ERR-00X), docs(F4): evalúa criterios E1-E12, docs(F5): README final y enlace de entrega; push al final; nunca tag ni force.
+  > A. ux-reviewer: jerarquía, accesibilidad (h1 único, aria-label de ⋮, aria-expanded/controls, foco visible, foco de vuelta, aria-live, contraste), semántica y responsive; lista priorizada. B. Aplicar SOLO las altas y las medias que no cambien el comportamiento acordado en SPECS; cada una con ERR-00X y commit fix(F4); el resto a «Mejoras futuras».
+- **Paso 0**: `git status --short` limpio · `git tag` incluye `F3-build` (anotado sobre `32504d5`, también en `origin`). Verificación manual del usuario anotada en P3.1–P3.7; hash de P3.7b (`32504d5`) registrado; P3.4–P3.7 ya tenían hash.
+- **Salida de ux-reviewer**: 4 altas (A1 filas resueltas `opacity-60` bajo AA; A2 ID `LOG-00n` `text-slate-400` 2,56:1; A3 botón `bg-emerald-600` 3,77:1; A4 modal sin trampa de foco), 10 medias (M1 foco perdido tras eliminar; M2 sin `aria-controls` en ⋮; M3 chips colapsados en el árbol de accesibilidad; M4 `aria-label` del enlace Log oculta el contador; M5 foco visible inconsistente; M6 borde del textarea 1,48:1; M7 propietario sobre `bg-red-50` 4,35:1; M8 objetivos táctiles < 40 px; M9 teclado ARIA del menú; M10 `<pre>` no enfocable) y 10 bajas (B1–B10). Contrastes calculados con la paleta Tailwind v3.
+- **Criterio de aplicación**: altas → todas (A1–A3 cambian clases literales de SPECS S9.1/S9.4/S9.5 por contraste AA; el comportamiento no cambia y SPECS no se modifica; desviación documentada en ERR-005). Medias → las que no cambian comportamiento ni clases fijadas: M1, M2, M3, M4, M5, M7, M10. **No aplicadas** (a `docs/EVALUACION.md` §D): M6 (clase literal de S6.5), M8 (cambia §11.3 y no lo exige WCAG 2.1 AA), M9 (cambia el comportamiento del menú, CA-18) y B1–B10.
+- **Correcciones** (cada una: regresión jsdom completa en verde antes del commit, fila en `docs/ERRORES.md`):
+
+  | ERR | Hallazgo | Corrección | Commit |
+  |---|---|---|---|
+  | ERR-005 | A1, A2, A3, M7 | Fila resuelta `bg-slate-50 dark:bg-slate-800/40` sin opacidad; ID `text-slate-600 dark:text-slate-400`; `BTN_EXITO` `bg-emerald-700`; resalte crítico `bg-red-50/50` | `d830e18` |
+  | ERR-006 | A4 | `inert` en `#app-aside` y `#app-content` + trampa de Tab/Mayús+Tab | `4a94c57` |
+  | ERR-007 | M1 | `indiceToggle()`/`focoTrasBorrar()`: foco al ⋮ que ocupa su lugar o al recuento (`tabindex="-1"`) | `6b205a2` |
+  | ERR-008 | M2 | `dropdown()`: `aria-controls` → `id="menu-<ID>"` + `aria-label` en el menú | `cbdafba` |
+  | ERR-009 | M3 | `invisible`/`visible` en el panel colapsable (transición intacta) | `7a2172b` |
+  | ERR-010 | M4 | `aria-label`/`title` «Log de errores (n abiertos)» calculado | `b27e562` |
+  | ERR-011 | M5 | Constante `FOCO` (`focus-visible:ring-2 …`) en todos los controles; fondo en `focus-visible:` en opciones de menú; `focus:outline-none` en el textarea | `7cc4108` |
+  | ERR-012 | M10 | `<pre tabindex="0" aria-label="Traza completa de LOG-00n">` + `FOCO` | `bad921d` |
+
+- **Pruebas**: nueva `test-a11y.js` (42 comprobaciones: inert y ciclo de foco, foco tras eliminar en 3 secciones, 32 ⋮ con `aria-controls` e ids únicos, `invisible` en chips, `aria-label` 6 → 5 → 1 → 0, foco visible en página y modales, `<pre>` enfocable). `test-errores.js` se actualizó a las clases de ERR-005 (sin `opacity-60`, `bg-slate-50`, `bg-red-50/50`).
+- **Decisión**: aceptada. 8 commits `fix(F4)`.
+- **Errores**: ERR-005…ERR-012 (resueltos). ERR-004 pasa a resuelto con la confirmación visual del usuario.
+
+### P4.2 — Evaluación E1–E12 (qa-evaluator) (2026-11-19)
+- **Agente/skill**: subagente `qa-evaluator` (editó solo `docs/EVALUACION.md`) · sesión principal: `docs/ERRORES.md` (hashes de ERR-005…012, ERR-004 resuelto) y esta bitácora
+- **Prompt** (parte C del prompt de P4.1): rellenar `docs/EVALUACION.md` con evidencia REAL para E1–E12 y el checklist B; ✅ solo lo verificado (la confirmación visual del usuario cuenta como evidencia, citada como tal); lo no verificable ⚠️ con motivo; E12 ✅ solo con la confirmación visual, sin inventar capturas.
+- **Salida**: `docs/EVALUACION.md` con bloque «Fuentes de evidencia», **E1–E12 ✅** (E12 y la parte visual de E3/E5–E9 apoyadas en la confirmación visual del usuario), checklist B completo (☑), sección C con la confirmación visual y la ejecución de P4.2, y sección **D. Mejoras futuras** (M6, M8, M9, B1–B10 con motivo). `qa-evaluator` añadió `test-dark.js` (CA-40…CA-42: toggle, `aria-pressed`, `localStorage.theme`, persistencia al navegar y al recargar) porque ninguna prueba cubría el modo oscuro.
+- **Observaciones del evaluador**: (1) ERR-009 y ERR-011 son posteriores a la confirmación visual; no tocan el layout, pero la transición del colapsable con `invisible` se razona por CSS y conviene un vistazo en navegador; (2) `dark:` aparece en 152 líneas (229 apariciones); (3) `<aside` = 2 (sidebar + bloque «¿Qué es una skill?»), `<table` = 6 (5 listados + desglose).
+- **Verificación** (2026-11-19, `verify-f4.sh` sobre `bad921d` + docs):
+
+  | Comando | Esperado | Obtenido | |
+  |---|---|---|---|
+  | `git status --short` | solo docs de la parte | ` M README.md M docs/ERRORES.md M docs/EVALUACION.md M docs/PROMPTS.md` (README va en el commit de F5) | ✅ |
+  | `grep -cE 'style=\|<style\|\.css\|rel="stylesheet"\|\.style\.'` | 0 | 0 | ✅ |
+  | `grep -c overflow-x-auto` | 0 | 0 | ✅ |
+  | `grep -c '<section'` | 6 | 6 | ✅ |
+  | `grep -c '<symbol'` | 27 | 27 | ✅ |
+  | `grep -c '<script src'` | 1 | 1 | ✅ |
+  | `grep -c '<h1'` | 1 | 1 | ✅ |
+  | `grep -n 'SKILLS.splice\|AGENTES.splice\|CONTRATOS.splice'` | sin resultados | sin resultados | ✅ |
+  | `node --check` script principal | OK | OK | ✅ |
+  | jsdom usuarios · agentes · skills · contratos · errores · coherencia · a11y · dark | 0 fallos | 45 · 133 · 105 · 135 · 151 · 22 · 42 · 10 = **643 OK · 0 fallos** | ✅ |
+  | `git log --reverse --name-status -- SPECS.md index.html` | SPECS antes del index del prototipo | `0dfaf38` A (plantilla) · `a9b4fe4` D · `b3b4d64` A SPECS.md · `b91ee39` A index.html | ✅ |
+  | `git diff b3b4d64 -- SPECS.md` | vacío | vacío | ✅ |
+  | enlaces locales del README | existen | todos | ✅ |
+  | `curl :8000/index.html` | 200 | 200 | ✅ |
+
+- **Decisión**: aceptada. F4 completa a falta del tag `F4-qa` (lo crea el usuario).
+- **Commit**: `docs(F4): evalúa criterios E1-E12` · _hash: se anota en P5.1_
+- **Tag**: — (`F4-qa` pendiente del usuario)
+- **Errores**: ninguno nuevo.
 
 ## F5 — Entrega
 _(pendiente)_
