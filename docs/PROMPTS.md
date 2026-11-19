@@ -385,9 +385,39 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Sin verificar en navegador (ERR-004)**: legibilidad de los 4 colores de gravedad y del resaltado crítico en claro/oscuro (CA-35, CA-40), `<pre>` con scroll interno, `disabled` real del menú, desaparición de la píldora (1440 px) y del punto (768 px), y ancho a 768 px: por cálculo ≈ 638 de 656 px (la columna Descripción queda estrecha y con varias líneas).
 - **Revisión**: E5 ⚠️ (5 de 5 secciones en DOM simulado). E6 ⚠️ (4 de 4 «Ver detalle» + Configurar). E7 ⚠️ (5 modales). E10 ⚠️ (`ERRORES` completo; contador del sidebar calculado). E11 ⚠️ (5 de 5 tablas). E4 sigue ✅. Pendiente solo la verificación visual.
 - **Decisión**: aceptada a falta de la verificación visual manual.
-- **Commit**: `feat(F3-log): errores, trazas y resolver` · _hash: se anota en el commit de cierre_
+- **Commit**: `feat(F3-log): errores, trazas y resolver` · `ea5fd3d`
 - **Tag**: — (`F3-build` solo tras la verificación del usuario en navegador)
 - **Errores**: ninguno nuevo.
+
+### P3.7b — Cierre de la construcción y sincronización (2026-11-19)
+- **Agente/skill**: sesión principal · skill `phase-logger`
+- **Prompt**: parte «CIERRE (commit 4)» del prompt de P3.5–P3.7: entradas P3.5–P3.7 con tabla de verificación, desviaciones y hashes; `CONTEXT.md` (F3 completa a falta de la verificación en navegador y del tag `F3-build`; próximo paso F4); `docs/EVALUACION.md` (E5–E11 con evidencia real, ⚠️ mientras no haya verificación en navegador).
+- **Verificación final** (sobre `ea5fd3d`, árbol limpio antes de editar la documentación):
+
+  | Comando | Esperado | Obtenido | |
+  |---|---|---|---|
+  | `git status --short` | limpio | (vacío) | ✅ |
+  | `grep -cE 'style=\|<style\|\.css\|rel="stylesheet"\|\.style\.'` | 0 | 0 | ✅ |
+  | `grep -c overflow-x-auto` | 0 | 0 | ✅ |
+  | `grep -c '<section'` | 6 | 6 | ✅ |
+  | `grep -c '<symbol'` | 27 | 27 | ✅ |
+  | `grep -c 'Sección en construcción'` | 0 | 0 | ✅ |
+  | `grep -c '<script src'` | 1 | 1 | ✅ |
+  | `grep -n 'SKILLS.splice\|AGENTES.splice\|CONTRATOS.splice'` | sin resultados | sin resultados | ✅ |
+  | `node --check` script principal | OK | OK | ✅ |
+  | jsdom Usuarios + navegación | 0 fallos | 45 OK | ✅ |
+  | jsdom Agentes | 0 fallos | 133 OK | ✅ |
+  | jsdom Skills | 0 fallos | 105 OK | ✅ |
+  | jsdom Contrataciones | 0 fallos | 135 OK | ✅ |
+  | jsdom Log de errores | 0 fallos | 151 OK | ✅ |
+  | `curl :8000/index.html` | 200 | 200 | ✅ |
+
+  Total: **569 comprobaciones en DOM simulado, 0 fallos**. Otros datos: `dark:` → 151 · `fetch(`/XHR → 0 · `<table` → 6 (5 listados + desglose del modal). El repo no contiene `package.json` ni `node_modules` (jsdom y las pruebas viven solo en el scratchpad de la sesión).
+- **Salida**: esta entrada; `CONTEXT.md` (F3 construida; pendiente verificación manual y tag `F3-build`; próximo paso F4); `docs/EVALUACION.md` (E3, E5–E11 actualizados, fila nueva en C).
+- **Decisión**: F3 construida. **No se crea el tag `F3-build`**: queda a la espera de la verificación del usuario en navegador (ERR-004).
+- **Commit**: `docs(F3): cierra construcción y sincroniza evaluación` · _hash: se anota en el siguiente commit de docs_
+- **Tag**: —
+- **Errores**: ninguno nuevo. ERR-004 sigue mitigado: P3.1–P3.7 sin verificación manual registrada (el marcador del prompt llegó vacío en P3.3b, P3.4 y P3.5).
 
 ## F4 — QA
 _(pendiente)_
