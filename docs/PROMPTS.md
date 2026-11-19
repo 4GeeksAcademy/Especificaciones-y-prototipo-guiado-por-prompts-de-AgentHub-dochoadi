@@ -177,9 +177,38 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
 - **Verificación**: `git status --short` → solo los 4 ficheros de docs; `index.html` sin cambios. Comprobaciones que respaldan la matriz (2026-11-19): `grep -cE 'style=|<style|\.css|rel="stylesheet"|\.style\.' index.html` → 0 · `grep -c overflow-x-auto index.html` → 0 · `grep -c '<script src' index.html` → 1 (CDN Tailwind) · `<section` → 6 · `<symbol` → 27 · `grep -rn "(28)" .claude` → sin resultados.
 - **Revisión** (contra `docs/EVALUACION.md`): solo documentación; ningún criterio cambia por código. E2 y E4 pasan a ✅ por evidencia ya existente.
 - **Decisión**: aceptada.
-- **Commit**: `docs(F3): registra hash de P3.2 y sincroniza estado` · _hash: pendiente_
+- **Commit**: `docs(F3): registra hash de P3.2 y sincroniza estado` · `be7e815`
 - **Tag**: —
 - **Errores**: ERR-004 (registrado, mitigado).
+
+### P3.3 — Sección Usuarios: tabla, dropdown y modal (2026-11-19)
+- **Agente/skill**: sesión principal siguiendo `.claude/agents/frontend-builder.md` (no invocado como subagente) · skills `ui-patterns`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F3, parte 3 (P3.3): sección Usuarios. Lee CLAUDE.md, CONTEXT.md, SPECS.md (§5, §10.3, §11.3, §11.4, §11.5, CA-15…CA-24, CA-39), docs/stitch/02-usuarios.md y adaptacion.md. Sigue frontend-builder y las skills ui-patterns y tailwind-vanilla. SPECS manda sobre Stitch. Edita SOLO index.html y, al cierre, PROMPTS.md y CONTEXT.md. No hagas commits.
+  > 1. Constante USUARIOS (7 registros §10.3); «Agentes de la empresa» calculado desde AGENTES. 2. badge(variante, texto) reutilizable (§11.5): plan Starter slate / Pro indigo / Enterprise violet; estado activo emerald / suspendido red / pendiente amber. 3. Recuento «7 usuarios» y tabla table/thead/tbody (S3.8, sin overflow-x-auto) renderizada por JS. 4. Dropdown ⋮ por fila con el núcleo de delegación: aria-label «Acciones para <nombre>», Ver detalle (eye) y Eliminar (trash, rojo); 2 últimas filas hacia arriba; recalcular tras re-render. 5. Modal «Detalle de usuario» (S5.4) max-w-lg, dl de 10 campos, «Sin accesos», «0 · Ninguno»; cierre con Cerrar, ✕, backdrop y Esc; foco al ⋮. 6. Eliminar (S5.5) con confirm literal; aceptar → «6 usuarios»; cancelar no cambia nada. 7. dark: en todo; sin style/CSS; 27 símbolos; 6 section; comentario P3.5 → P3.7. 8. Autocomprobación (greps, node --check, servidor 8000) y qué queda sin verificar en navegador.
+- **Salida**: `index.html`:
+  - Marcado: `#view-usuarios` con recuento `#usuarios-count` (`aria-live="polite"`) y contenedor S3.8 > `<table>` con `<thead>` (5 `<th scope="col">`, el último `sr-only` «Acciones») y `<tbody id="usuarios-tbody">` vacío; las filas se generan por JS.
+  - Datos: constante `USUARIOS` con los 7 registros de §10.3 (`ultimoAcceso: null` en US-05 y US-07). `agentesDe(empresa)` filtra `AGENTES` por propietario.
+  - Utilidades **reutilizables para P3.4–P3.7**: `esc()`, `plural()`, `icon()`, `badge(variante, texto, prefijo)` con las 8 variantes de §11, `dropdown(nombre, opciones, arriba)` (§11.3, con `data-action`/`data-id`), `toggleDe()`, constantes de celda/fila (`CELDA`, `FILA`, `VACIA`), `FOOTER_CERRAR` y `campo(dt, dd, ancho)` para los `<dl>` de los modales.
+  - Lógica: `renderUsuarios()` (recuento + filas; las 2 últimas con `bottom-full mb-1`), `verUsuario()` (modal único, `max-w-lg`, 10 campos), `eliminarUsuario()` (confirm literal, `splice` + re-render). Delegación en `#view-usuarios`: cierra el menú antes de ejecutar la acción y pasa el ⋮ como origen del foco.
+  - Comentario del contador del sidebar corregido a «dato real en P3.7».
+- **Desviaciones (manda SPECS)**:
+  1. **Sin extras de Stitch**: ni KPI superiores, ni búsqueda/filtros/«Añadir usuario», ni «Reenviar enlace», ni pie «Mostrando 1 a 7». Tampoco avatar con iniciales ni email en `font-mono`: S5.1 no los pide (nombre + empresa, email `text-slate-600`).
+  2. **Celdas `px-3 lg:px-4`** también en `<th>` (S3.8 dice `px-4`), aplicando S3.7 para que la tabla quepa a 768 px.
+  3. **Modal**: Email y «Agentes de la empresa» ocupan 2 columnas (`sm:col-span-2`) por su longitud; S5.4 no fija el ancho de cada campo.
+  4. **Añadidos menores no definidos en SPECS**: hover `bg-red-50` en la opción «Eliminar»; fila de estado vacío «No hay usuarios.» si se borran todos; al cancelar el `confirm` el foco vuelve al ⋮ (al aceptar, la fila desaparece y el foco queda en el documento).
+- **Verificación**:
+  - `grep -cE 'style=|<style|\.css|rel="stylesheet"|\.style\.' index.html` → 0 (CA-02) · `overflow-x-auto` → 0 · `<script src` → 1 (CDN) · `fetch`/XHR → 0 (CA-03).
+  - `<section` → 6 (CA-04) · `<symbol` → 27 · `id: 'US-0` → 7 · `<table|<thead|<tbody` → 3 · «Sección en construcción» → 4 · `P3.5` → 0.
+  - `node --check` del script principal → OK.
+  - **DOM simulado (jsdom 24, instalado solo en el scratchpad, fuera del repo)**: script de 42 comprobaciones → **42 OK · 0 fallos**. Cubre: 7 filas y recuento; colores de badges por plan/estado; subtítulo de Carlos Vidal = solo «Umbrella» (glitch de Stitch evitado); aria-label de cada ⋮; opciones e iconos; CA-15 (abre, `aria-expanded`), CA-16, CA-17 (clic en topbar y en cabecera de tabla), CA-18 (uno a la vez, Esc + foco), CA-19 (filas 6–7 hacia arriba; tras borrar, 5–6); CA-20/21 (Cerrar y ✕), CA-22 (clic dentro no cierra, backdrop sí), CA-23 (Esc, `overflow-hidden` retirado, foco al ⋮), CA-24 (10 campos; US-05 «Sin accesos» y «2 · Nova, Vega»; US-07 «0 · Ninguno»; US-01 «2 · Atlas, Sirius»; US-06 «1 · Lyra»; US-03 «1 · Orion»); CA-39 (texto literal del confirm, cancelar = 7, aceptar = «6 usuarios»); Dashboard intacto; sin errores JS (salvo `window.scrollTo`, no implementado en jsdom).
+  - `python3 -m http.server 8000` → `http://localhost:8000/index.html` HTTP 200.
+  - **Sin verificar en navegador (ERR-004)**: aspecto visual a 1440 y 768 px (que la tabla quepa sin scroll horizontal y que los menús no se recorten, CA-10/CA-19), claro/oscuro de badges, menús y modal (CA-40), transición/hover, `backdrop-blur`, el `confirm()` nativo real y que Tailwind CDN genere las clases inyectadas por JS. Cálculo a 768 px: 656 px útiles; contenido estimado ≈ 610 px (nombre ≈ 100, email ≈ 190, plan ≈ 80, estado ≈ 85, ⋮ 32, padding 120).
+- **Revisión** (contra `docs/EVALUACION.md`): E5 ⚠️ (dropdown completo en Usuarios; faltan 4 secciones). E6 ⚠️ (modal «Ver detalle» en 1 de 4 secciones). E7 ⚠️ (cierre con botón, ✕, backdrop y Esc probado en DOM simulado; falta navegador). E10 ⚠️ (`USUARIOS` coherente con §10.3; agentes por empresa calculados desde `AGENTES`). E11 ⚠️ (primera `<table>` con `<thead>`/`<tbody>` y `th scope`; faltan 4). E4 sigue ✅.
+- **Decisión**: aceptada a falta de la verificación visual manual.
+- **Commit**: `feat(F3-usuarios): tabla, dropdown y modal` · _hash: pendiente_
+- **Tag**: — (F3 sigue abierta)
+- **Errores**: ninguno nuevo (ERR-004 sigue mitigado).
 
 ## F4 — QA
 _(pendiente)_

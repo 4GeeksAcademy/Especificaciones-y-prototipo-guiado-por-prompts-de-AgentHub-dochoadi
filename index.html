@@ -180,7 +180,23 @@
       </section>
       <section id="view-usuarios" aria-labelledby="t-usuarios" class="hidden">
         <h2 id="t-usuarios" class="sr-only">Usuarios</h2>
-        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+
+        <!-- S5.1 — Tabla de usuarios (filas por JS desde USUARIOS) -->
+        <p id="usuarios-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Nombre</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Email</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Plan</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Estado</th>
+                <th scope="col" class="px-3 py-3 text-right lg:px-4"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="usuarios-tbody"></tbody>
+          </table>
+        </div>
       </section>
       <section id="view-agentes" aria-labelledby="t-agentes" class="hidden">
         <h2 id="t-agentes" class="sr-only">Agentes</h2>
@@ -249,6 +265,15 @@
     { id: 'CT-05', cliente: 'Umbrella', agente: 'Lyra', skills: ['SK-04'], inicio: '01/02/2026', fin: '30/04/2026', meses: 3, estado: 'cancelado' },
     { id: 'CT-06', cliente: 'Globex', agente: 'Vega', skills: ['SK-02', 'SK-05'], inicio: '01/07/2026', fin: '31/12/2026', meses: 6, estado: 'activo' }
   ];
+  const USUARIOS = [ // §10.3 (ultimoAcceso null = "Sin accesos"; agentes de la empresa se calculan)
+    { id: 'US-01', nombre: 'Laura Méndez', email: 'laura.mendez@acmecorp.com', empresa: 'Acme Corp', rol: 'Administradora de cuenta', plan: 'Enterprise', estado: 'activo', alta: '12/11/2025', ultimoAcceso: '18/11/2026 09:42' },
+    { id: 'US-02', nombre: 'Daniel Ortega', email: 'daniel.ortega@acmecorp.com', empresa: 'Acme Corp', rol: 'Operador', plan: 'Enterprise', estado: 'activo', alta: '08/01/2026', ultimoAcceso: '17/11/2026 18:05' },
+    { id: 'US-03', nombre: 'Peter Gibbons', email: 'peter.gibbons@initech.com', empresa: 'Initech', rol: 'Administrador de cuenta', plan: 'Pro', estado: 'activo', alta: '20/02/2026', ultimoAcceso: '16/11/2026 11:30' },
+    { id: 'US-04', nombre: 'Marta Ruiz', email: 'marta.ruiz@globex.com', empresa: 'Globex', rol: 'Administradora de cuenta', plan: 'Pro', estado: 'activo', alta: '03/12/2025', ultimoAcceso: '18/11/2026 08:47' },
+    { id: 'US-05', nombre: 'Javier Lozano', email: 'javier.lozano@globex.com', empresa: 'Globex', rol: 'Operador', plan: 'Pro', estado: 'pendiente', alta: '14/11/2026', ultimoAcceso: null },
+    { id: 'US-06', nombre: 'Carlos Vidal', email: 'carlos.vidal@umbrella.com', empresa: 'Umbrella', rol: 'Administrador de cuenta', plan: 'Starter', estado: 'suspendido', alta: '25/01/2026', ultimoAcceso: '30/04/2026 17:12' },
+    { id: 'US-07', nombre: 'Sofía Navarro', email: 'sofia.navarro@starklabs.io', empresa: 'Stark Labs', rol: 'Administradora de cuenta', plan: 'Starter', estado: 'pendiente', alta: '15/11/2026', ultimoAcceso: null }
+  ];
   const DESCUENTOS_MES = 31.5; // §10.6: hardcodeado (Acme 15 % de 90 € + STARTUP20 de Initech 20 % de 90 €)
 
   /* ---------- Utilidades ---------- */
@@ -256,6 +281,45 @@
   const precioSkill = id => SKILLS.find(s => s.id === id).precio;
   const precioMensual = c => c.skills.reduce((t, id) => t + precioSkill(id), 0);
   const setText = (id, txt) => { document.getElementById(id).textContent = txt; };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+  const icon = (id, cls = 'h-4 w-4') => `<svg class="${cls} shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
+  /* ---------- Badge (§11.5): badge(variante, texto, prefijo) con la paleta de §11 ---------- */
+  const BADGE_BASE = 'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap';
+  const BADGE = {
+    emerald: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+    slate: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    red: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
+    orange: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
+    amber: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+    sky: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300',
+    indigo: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300',
+    violet: 'bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300'
+  };
+  const badge = (variante, texto, prefijo = '') => `<span class="${BADGE_BASE} ${BADGE[variante]}">${prefijo}${esc(texto)}</span>`;
+
+  /* ---------- Piezas de tabla comunes (S3.7, S3.8, §11.3) ---------- */
+  const CELDA = 'px-3 py-3 align-middle lg:px-4';
+  const FILA = 'border-b border-slate-100 last:border-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50';
+  const VACIA = 'px-3 py-8 text-center text-slate-500 lg:px-4 dark:text-slate-400';
+  const ITEM_BASE = 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm';
+  const ITEM_NORMAL = 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800';
+  const ITEM_PELIGRO = 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20';
+  // opciones: [{ accion, id, icono, texto, peligro }]; arriba = true en las 2 últimas filas (§11.3)
+  const dropdown = (nombre, opciones, arriba) => `
+    <div class="relative inline-block text-left" data-dropdown>
+      <button type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Acciones para ${esc(nombre)}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200">${icon('ellipsis-vertical', 'h-5 w-5')}</button>
+      <div role="menu" class="absolute right-0 z-40 hidden w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900 ${arriba ? 'bottom-full mb-1' : 'mt-1'}">
+        ${opciones.map(o => `<button type="button" role="menuitem" data-action="${o.accion}" data-id="${esc(o.id)}" class="${ITEM_BASE} ${o.peligro ? ITEM_PELIGRO : ITEM_NORMAL}">${icon(o.icono)}${esc(o.texto)}</button>`).join('')}
+      </div>
+    </div>`;
+  const toggleDe = btn => btn.closest('[data-dropdown]').querySelector('[data-dropdown-toggle]');
+
+  /* ---------- Modal: piezas de contenido (§11.4) ---------- */
+  const BTN_SECUNDARIO = 'rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800';
+  const FOOTER_CERRAR = `<button type="button" data-close-modal class="${BTN_SECUNDARIO}">Cerrar</button>`;
+  const campo = (dt, dd, ancho = false) => `<div${ancho ? ' class="sm:col-span-2"' : ''}><dt class="text-xs uppercase text-slate-500 dark:text-slate-400">${dt}</dt><dd class="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">${dd}</dd></div>`;
 
   /* ---------- Dashboard (S4.2: se calcula una sola vez al cargar) ---------- */
   const activosCT = CONTRATOS.filter(c => c.estado === 'activo');
@@ -285,7 +349,7 @@
   });
   syncToggle();
 
-  /* ---------- Dropdown ⋮ (delegación; sin uso todavía) ---------- */
+  /* ---------- Dropdown ⋮ (delegación en document; §11.3) ---------- */
   const closeMenus = (except) => document.querySelectorAll('[data-dropdown]').forEach(d => {
     if (d === except) return;
     d.querySelector('[role=menu]').classList.add('hidden');
@@ -356,6 +420,71 @@
     b.setAttribute('aria-expanded', String(abrir));
   });
 
+  /* ---------- Usuarios (§5) ---------- */
+  const PLAN_BADGE = { Starter: 'slate', Pro: 'indigo', Enterprise: 'violet' };            // S5.2
+  const ESTADO_USUARIO = { activo: ['emerald', 'Activo'], suspendido: ['red', 'Suspendido'], pendiente: ['amber', 'Pendiente'] };
+  const badgeEstadoUsuario = u => badge(...ESTADO_USUARIO[u.estado]);
+  const agentesDe = empresa => AGENTES.filter(a => a.propietario === empresa);           // §10.3: calculado
+  const tbodyUsuarios = document.getElementById('usuarios-tbody');
+
+  const renderUsuarios = () => {
+    setText('usuarios-count', plural(USUARIOS.length, 'usuario', 'usuarios'));
+    tbodyUsuarios.innerHTML = USUARIOS.length ? USUARIOS.map((u, i) => `
+      <tr class="${FILA}">
+        <td class="${CELDA}">
+          <p class="font-medium text-slate-900 dark:text-slate-100">${esc(u.nombre)}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">${esc(u.empresa)}</p>
+        </td>
+        <td class="${CELDA} text-slate-600 dark:text-slate-300">${esc(u.email)}</td>
+        <td class="${CELDA}">${badge(PLAN_BADGE[u.plan], u.plan)}</td>
+        <td class="${CELDA}">${badgeEstadoUsuario(u)}</td>
+        <td class="${CELDA} text-right">${dropdown(u.nombre, [
+          { accion: 'ver-usuario', id: u.id, icono: 'eye', texto: 'Ver detalle' },
+          { accion: 'eliminar-usuario', id: u.id, icono: 'trash', texto: 'Eliminar', peligro: true }
+        ], i >= USUARIOS.length - 2)}</td>
+      </tr>`).join('') : `<tr><td colspan="5" class="${VACIA}">No hay usuarios.</td></tr>`;
+  };
+
+  const verUsuario = (u, origenBtn) => {                                                  // S5.4
+    const ags = agentesDe(u.empresa);
+    openModal(origenBtn, {
+      titulo: 'Detalle de usuario',
+      subtitulo: u.nombre,
+      ancho: 'max-w-lg',
+      body: `<dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+        ${campo('ID', esc(u.id))}
+        ${campo('Nombre', esc(u.nombre))}
+        ${campo('Email', esc(u.email), true)}
+        ${campo('Empresa', esc(u.empresa))}
+        ${campo('Rol', esc(u.rol))}
+        ${campo('Plan', badge(PLAN_BADGE[u.plan], u.plan))}
+        ${campo('Estado', badgeEstadoUsuario(u))}
+        ${campo('Fecha de alta', esc(u.alta))}
+        ${campo('Último acceso', u.ultimoAcceso ? esc(u.ultimoAcceso) : 'Sin accesos')}
+        ${campo('Agentes de la empresa', `${ags.length} · ${ags.length ? esc(ags.map(a => a.nombre).join(', ')) : 'Ninguno'}`, true)}
+      </dl>`,
+      footer: FOOTER_CERRAR
+    });
+  };
+
+  const eliminarUsuario = (u, origenBtn) => {                                             // S5.5
+    if (!confirm(`¿Eliminar a ${u.nombre}? La acción solo afecta a esta vista.`)) { origenBtn.focus(); return; }
+    USUARIOS.splice(USUARIOS.indexOf(u), 1);
+    renderUsuarios();                                                                       // recalcula las 2 filas que abren hacia arriba
+  };
+
+  document.getElementById('view-usuarios').addEventListener('click', e => {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    const u = USUARIOS.find(x => x.id === b.dataset.id);
+    if (!u) return;
+    const origenBtn = toggleDe(b);
+    closeMenus();                                                                           // S5.3: elegir una opción cierra el menú
+    if (b.dataset.action === 'ver-usuario') verUsuario(u, origenBtn);
+    else if (b.dataset.action === 'eliminar-usuario') eliminarUsuario(u, origenBtn);
+  });
+  renderUsuarios();
+
   /* ---------- Navegación por hash ---------- */
   const VISTAS = ['dashboard', 'usuarios', 'agentes', 'skills', 'contrataciones', 'errores'];
   const TITULOS = {
@@ -396,7 +525,7 @@
   window.addEventListener('hashchange', mostrar);
   mostrar();
 
-  /* ---------- Contador de errores abiertos (dato real en P3.5) ---------- */
+  /* ---------- Contador de errores abiertos (dato real en P3.7) ---------- */
   const abiertas = 6;
   const cnt = document.getElementById('errores-count');
   const dot = document.getElementById('errores-dot');
