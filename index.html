@@ -44,7 +44,7 @@
   </svg>
 
   <!-- Sidebar persistente -->
-  <aside class="fixed inset-y-0 left-0 z-30 flex w-16 flex-col border-r border-slate-200 bg-white lg:w-64 dark:border-slate-800 dark:bg-slate-900">
+  <aside id="app-aside" class="fixed inset-y-0 left-0 z-30 flex w-16 flex-col border-r border-slate-200 bg-white lg:w-64 dark:border-slate-800 dark:bg-slate-900">
     <div class="flex h-16 items-center justify-center gap-3 border-b border-slate-200 lg:justify-start lg:px-5 dark:border-slate-800">
       <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-indigo-600 text-sm font-bold text-white">AH</span>
       <div class="hidden lg:block">
@@ -100,7 +100,7 @@
   </aside>
 
   <!-- Contenido: margen igual al ancho del sidebar -->
-  <div class="pl-16 lg:pl-64">
+  <div id="app-content" class="pl-16 lg:pl-64">
     <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-6 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
       <div>
         <h1 id="page-title" class="text-lg font-semibold">Dashboard</h1>
@@ -541,6 +541,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
   /* ---------- Modal (genérico) ---------- */
   const modal = document.getElementById('modal');
   let origen = null;
+  const FONDO = [document.getElementById('app-aside'), document.getElementById('app-content')];
   // footer por defecto = «Cerrar»: un modal con pie propio (Configurar) no se arrastra a la siguiente apertura
   const openModal = (btn, { titulo = '', subtitulo = '', ancho = 'max-w-lg', body: html = '', footer = FOOTER_CERRAR } = {}) => {
     origen = btn || null;
@@ -552,12 +553,14 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     panel.className = panel.className.replace(/max-w-\S+/, ancho);
     modal.classList.remove('hidden'); modal.classList.add('flex');
     body.classList.add('overflow-hidden');
+    FONDO.forEach(el => el.setAttribute('inert', ''));                                     // ERR-006: fondo no operable con el modal abierto
     modal.querySelector('[data-close-modal]').focus();
   };
   const closeModal = () => {
     if (modal.classList.contains('hidden')) return;
     modal.classList.add('hidden'); modal.classList.remove('flex');
     body.classList.remove('overflow-hidden');
+    FONDO.forEach(el => el.removeAttribute('inert'));                                       // antes de devolver el foco al ⋮
     if (origen) origen.focus();
     origen = null;
   };
@@ -567,6 +570,16 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
 
   /* ---------- Teclado: Esc cierra modal o menú ---------- */
   document.addEventListener('keydown', e => {
+    // ERR-006: trampa de foco (Tab / Mayús+Tab ciclan dentro del modal); respaldo de `inert`
+    if (e.key === 'Tab' && !modal.classList.contains('hidden')) {
+      const f = [...modal.querySelectorAll('button:not([disabled]), textarea, [href], [tabindex="0"]')];
+      if (!f.length) return;
+      const primero = f[0], ultimo = f[f.length - 1];
+      if (!modal.contains(document.activeElement)) { e.preventDefault(); primero.focus(); }
+      else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+      else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+      return;
+    }
     if (e.key !== 'Escape') return;
     if (!modal.classList.contains('hidden')) { closeModal(); return; }
     const abierto = document.querySelector('[data-dropdown] [role=menu]:not(.hidden)');
