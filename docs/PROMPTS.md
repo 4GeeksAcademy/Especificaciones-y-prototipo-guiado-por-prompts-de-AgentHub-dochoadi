@@ -204,11 +204,30 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **DOM simulado (jsdom 24, instalado solo en el scratchpad, fuera del repo)**: script de 42 comprobaciones → **42 OK · 0 fallos**. Cubre: 7 filas y recuento; colores de badges por plan/estado; subtítulo de Carlos Vidal = solo «Umbrella» (glitch de Stitch evitado); aria-label de cada ⋮; opciones e iconos; CA-15 (abre, `aria-expanded`), CA-16, CA-17 (clic en topbar y en cabecera de tabla), CA-18 (uno a la vez, Esc + foco), CA-19 (filas 6–7 hacia arriba; tras borrar, 5–6); CA-20/21 (Cerrar y ✕), CA-22 (clic dentro no cierra, backdrop sí), CA-23 (Esc, `overflow-hidden` retirado, foco al ⋮), CA-24 (10 campos; US-05 «Sin accesos» y «2 · Nova, Vega»; US-07 «0 · Ninguno»; US-01 «2 · Atlas, Sirius»; US-06 «1 · Lyra»; US-03 «1 · Orion»); CA-39 (texto literal del confirm, cancelar = 7, aceptar = «6 usuarios»); Dashboard intacto; sin errores JS (salvo `window.scrollTo`, no implementado en jsdom).
   - `python3 -m http.server 8000` → `http://localhost:8000/index.html` HTTP 200.
   - **Sin verificar en navegador (ERR-004)**: aspecto visual a 1440 y 768 px (que la tabla quepa sin scroll horizontal y que los menús no se recorten, CA-10/CA-19), claro/oscuro de badges, menús y modal (CA-40), transición/hover, `backdrop-blur`, el `confirm()` nativo real y que Tailwind CDN genere las clases inyectadas por JS. Cálculo a 768 px: 656 px útiles; contenido estimado ≈ 610 px (nombre ≈ 100, email ≈ 190, plan ≈ 80, estado ≈ 85, ⋮ 32, padding 120).
+  - **Verificación manual en navegador (actualización P3.3b, 2026-11-19)**: **pendiente**. El prompt P3.3b no incluía el resultado (el marcador «[PEGA AQUÍ…]» llegó sin rellenar); no se da por verificado. Anotar aquí el resultado cuando el usuario lo aporte (Ports → 8000: 1440/768 px, claro/oscuro).
 - **Revisión** (contra `docs/EVALUACION.md`): E5 ⚠️ (dropdown completo en Usuarios; faltan 4 secciones). E6 ⚠️ (modal «Ver detalle» en 1 de 4 secciones). E7 ⚠️ (cierre con botón, ✕, backdrop y Esc probado en DOM simulado; falta navegador). E10 ⚠️ (`USUARIOS` coherente con §10.3; agentes por empresa calculados desde `AGENTES`). E11 ⚠️ (primera `<table>` con `<thead>`/`<tbody>` y `th scope`; faltan 4). E4 sigue ✅.
 - **Decisión**: aceptada a falta de la verificación visual manual.
-- **Commit**: `feat(F3-usuarios): tabla, dropdown y modal` · _hash: pendiente_
+- **Commit**: `feat(F3-usuarios): tabla, dropdown y modal` · `9b370ba`
 - **Tag**: — (F3 sigue abierta)
 - **Errores**: ninguno nuevo (ERR-004 sigue mitigado).
+
+### P3.3b — Sincronizar documentación tras Usuarios (2026-11-19)
+- **Agente/skill**: sesión principal · skill `phase-logger`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F3, P3.3b: sincronizar documentación. Solo toca CONTEXT.md, docs/PROMPTS.md y docs/EVALUACION.md. No toques index.html. No hagas commits.
+  > 1. PROMPTS: en P3.3, hash 9b370ba; añadir entrada P3.3b; anotar en P3.3 el resultado de la verificación manual en navegador. 2. CONTEXT: último commit 9b370ba; P3.3 commiteado; próximo paso P3.4 Agentes; decisión nueva: los borrados (Agentes y Skills) usan un Set de IDs ocultos en vez de splice sobre el dataset maestro. 3. EVALUACION: E5, E6, E7 → ⚠️ con la evidencia de P3.3; E11 ⚠️ (1 de 5 tablas); E3 y E10 con lo hecho en Usuarios; E4 ✅ revalidado sobre 9b370ba; fila nueva en la sección C; nada ✅ sin navegador.
+- **Contexto**: la revisión de inicio de sesión detectó que P3.3 ya estaba commiteado y pusheado (`9b370ba`, árbol limpio), pero `CONTEXT.md` lo daba como «sin commitear», `PROMPTS.md` tenía «hash: pendiente» y `EVALUACION.md` no se había actualizado en P3.3.
+- **Salida**:
+  - `docs/PROMPTS.md`: hash `9b370ba` en P3.3; verificación manual anotada como **pendiente** (el resultado no venía en el prompt); esta entrada.
+  - `CONTEXT.md`: estado de F3, último commit, próximo paso P3.4 y nueva decisión fijada (borrados con `Set` de IDs ocultos).
+  - `docs/EVALUACION.md`: E5, E6, E7 ⬜ → ⚠️; E3, E9, E10, E11 actualizados con Usuarios; E4 ✅ revalidado sobre `9b370ba`; fila nueva en C.
+- **Decisión técnica registrada**: en Agentes y Skills, «Eliminar» oculta la fila mediante un `Set` de IDs ocultos de la vista y **no** hace `splice` sobre `AGENTES`/`SKILLS`. Motivo: `precioSkill()` hace `SKILLS.find(...).precio` (un `splice` rompería Contrataciones con TypeError) y S6.6/S7.6 exigen que el borrado no afecte a otras secciones (Usuarios calcula «Agentes de la empresa» y Skills cuenta agentes desde `AGENTES`). En Usuarios se mantiene el `splice` de `USUARIOS` porque ningún otro dato depende de él.
+- **Verificación** (2026-11-19, sobre `9b370ba`): `grep -cE 'style=|<style|\.css|rel="stylesheet"|\.style\.' index.html` → 0 · `overflow-x-auto` → 0 · `<script src` → 1 (CDN) · `fetch(`/XHR → 0 · `<section` → 6 · `<symbol` → 27 · `<table|<thead|<tbody` → 3 · `dark:` → 86 · «Sección en construcción» → 4. `index.html` sin cambios.
+- **Revisión** (contra `docs/EVALUACION.md`): solo documentación; los cambios de estado reflejan evidencia ya existente de P3.3 (DOM simulado), sin ✅ nuevos.
+- **Decisión**: aceptada.
+- **Commit**: `docs(F3): registra hash de P3.3 y sincroniza evaluación` · _hash: pendiente_
+- **Tag**: —
+- **Errores**: ninguno nuevo (ERR-004 sigue mitigado; verificación manual de P3.1–P3.3 pendiente).
 
 ## F4 — QA
 _(pendiente)_
