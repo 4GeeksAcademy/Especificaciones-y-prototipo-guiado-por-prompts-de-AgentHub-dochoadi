@@ -299,7 +299,48 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Sin verificar en navegador (ERR-004)**: aspecto del bloque S7.1 y de la tabla a 1440/768 px (a 768 px la columna Precio/mes se oculta), legibilidad del badge mini a 10 px, iconos propios de cada skill, claro/oscuro (CA-40).
 - **Revisión**: E5 ⚠️ (3 de 5 secciones). E6 ⚠️ (2 de 4 «Ver detalle»). E7 ⚠️ (3 modales). E10 ⚠️ (descripciones y permisos literales; recuentos calculados). E11 ⚠️ (3 de 5 tablas). E4 sigue ✅.
 - **Decisión**: aceptada a falta de la verificación visual manual.
-- **Commit**: `feat(F3-skills): catálogo, modal y eliminar` · _hash: se anota en el commit de P3.6_
+- **Actualización en P3.6**: la prueba `test-skills.js` se amplió para comprobar Contrataciones tras eliminar «Navegación web» (CT-01 sigue mostrando el chip, 660,00 € en la tabla y en el `tfoot` del modal) → **105 OK · 0 fallos**.
+- **Commit**: `feat(F3-skills): catálogo, modal y eliminar` · `b213a33`
+- **Tag**: —
+- **Errores**: ninguno nuevo.
+
+### P3.6 — Sección Contrataciones: tabla y desglose (2026-11-19)
+- **Agente/skill**: sesión principal siguiendo `.claude/agents/frontend-builder.md` · skills `ui-patterns`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; mismo prompt que P3.5):
+  > P3.6: CONTRATOS con los 6 contratos de §10.4 (ampliar sin romper el Dashboard); importe = Σ precio × meses calculado (660/900/210/360/45/390 €). Tabla S3.8 con cliente (+ID), agente, chips, inicio, fin, importe y estado del contrato rotulado «Contrato» (Activo emerald, Finalizado slate, Cancelado red); dropdown Ver detalle / Descargar factura (sin lógica). Modal «Detalle de contrato» con desglose Skill | Precio/mes | Meses | Subtotal, tfoot con total y línea de cálculo (S8.5), botones Cerrar y Descargar factura. Sin extras de Stitch.
+- **Salida**: `index.html`:
+  - Datos: `CONTRATOS` ya tenía todos los campos de §10.4 desde P3.2 (id, cliente, agente, skills, inicio, fin, meses, estado): **no se modifica**. El importe se calcula con `importe(c) = precioMensual(c) × c.meses` (S8.5); el Dashboard sigue usando `precioMensual()` sin cambios.
+  - Marcado: `#contratos-count` (`aria-live`) + tabla S3.8 con 7 `<th scope="col">`.
+  - Lógica: `renderContratos()` (cliente + ID; agente con el badge del estado del contrato debajo, con prefijo `sr-only` «Contrato: » y `title="Estado del contrato"`; chips `CHIP` siempre visibles; Inicio/Fin `whitespace-nowrap`; importe a la derecha `font-semibold tabular-nums`; `dropdown()` Ver detalle / Descargar factura; 2 últimas filas hacia arriba); `verContrato()` (modal `max-w-2xl`, subtítulo «CT-0n · Cliente — Agente», `<dl>` `grid-cols-2 lg:grid-cols-4` Estado/Inicio/Fin/Duración, tabla de desglose con `<caption class="sr-only">`, `<tfoot>` «Total mensual» y «Total del contrato» `text-base font-semibold`, línea de cálculo `font-mono text-xs`; pie «Descargar factura» (secundario, sin lógica) + «Cerrar»); delegación en `#view-contrataciones`.
+- **Desviaciones / decisiones (manda SPECS)**:
+  1. **Tablet (768 px)**: por cálculo, 7 columnas ocupan ≈ 706 px y solo hay 656 útiles. Se aplica S3.7 («columnas secundarias ocultas con `hidden lg:table-cell`»): la columna **Fin** solo se muestra desde `lg`; en tablet la fecha de fin aparece bajo Inicio (`lg:hidden`, con `sr-only` «Fin: ») y la cabecera dice «Inicio / Fin». Con eso ≈ 607 px. No se pierde información.
+  2. **«Contrato»**: el prompt pedía rotular el badge; se sigue la decisión ya tomada en `docs/stitch/adaptacion.md` (prefijo `sr-only` «Contrato: » + `title`) para no cambiar el texto visible del badge de S8.2 («Activo», «Finalizado», «Cancelado»).
+  3. **«Descargar factura»**: el prompt decía «no cierra nada»; SPECS S8.3 y CA-34 dicen que **cierra el menú** y no hace nada más. Se sigue SPECS: en el menú cierra el menú y devuelve el foco al ⋮; en el pie del modal no hace nada (el modal sigue abierto).
+  4. **Línea de cálculo** con un solo skill sin paréntesis: `15,00 € × 3 meses = 45,00 €` (§10.4 «15 × 3»).
+  5. Sin KPI, búsqueda, filtros ni «Nueva contratación» de Stitch. Sin opción Eliminar (S8.3).
+- **Verificación** (2026-11-19, `verify.sh`):
+
+  | Comando | Esperado | Obtenido | |
+  |---|---|---|---|
+  | `git status --short` | solo la parte | ` M index.html` (+ este fichero) | ✅ |
+  | `grep -cE 'style=\|<style\|\.css\|rel="stylesheet"\|\.style\.'` | 0 | 0 | ✅ |
+  | `grep -c overflow-x-auto` | 0 | 0 | ✅ |
+  | `grep -c '<section'` | 6 | 6 | ✅ |
+  | `grep -c '<symbol'` | 27 | 27 | ✅ |
+  | `grep -c 'Sección en construcción'` | 1 | 1 | ✅ |
+  | `grep -c '<script src'` | 1 | 1 | ✅ |
+  | `grep -n 'SKILLS.splice\|AGENTES.splice\|CONTRATOS.splice'` | sin resultados | sin resultados | ✅ |
+  | `node --check` script principal | OK | OK | ✅ |
+  | jsdom `test-contratos.js` | 0 fallos | 135 OK · 0 fallos | ✅ |
+  | jsdom `test-skills.js` (ampliada) | 0 fallos | 105 OK · 0 fallos | ✅ |
+  | jsdom `test-agentes.js` | 0 fallos | 133 OK · 0 fallos | ✅ |
+  | `curl :8000/index.html` | 200 | 200 | ✅ |
+
+  La prueba cubre: 6 filas y recuento; cliente + ID, agente + badge de contrato (emerald/slate/red), chips, Inicio (+ Fin en tablet), Fin (lg); **CA-32 importes 660/900/210/360/45/390 €**; **suma de activos 2.160 €** y Dashboard intacto con 245,00 €; **CA-44** (skills de cada contrato = skills del agente en la vista Agentes); dropdown y modal (CA-15…CA-23); para los 6 contratos: título y subtítulo, `max-w-2xl`, `<dl>` Estado/Inicio/Fin/Duración, una fila por skill con subtotal = precio × meses, `tfoot` total mensual y total del contrato = importe de la tabla, línea de cálculo exacta (**CA-33**), pie «Descargar factura» + «Cerrar», y «Descargar factura» del modal no lo cierra; **CA-34** (menú cerrado, sin modal, sin `confirm`, foco al ⋮, sin errores en consola).
+  - **Sin verificar en navegador (ERR-004)**: que la tabla quepa a 768 px con Fin bajo Inicio (CA-10), menús de las 2 últimas filas sin recortar (CA-19), aspecto del modal con tabla de desglose, claro/oscuro (CA-40).
+- **Revisión**: E5 ⚠️ (4 de 5 secciones). E6 ⚠️ (3 de 4 «Ver detalle»). E7 ⚠️ (4 modales). E10 ⚠️ (importes calculados y coherentes con Agentes, Skills y Dashboard). E11 ⚠️ (4 de 5 tablas + tabla de desglose con `caption`, `thead`, `tbody`, `tfoot` y `th scope="row"`). E4 sigue ✅.
+- **Decisión**: aceptada a falta de la verificación visual manual.
+- **Commit**: `feat(F3-contrataciones): tabla y desglose` · _hash: se anota en el commit de P3.7_
 - **Tag**: —
 - **Errores**: ninguno nuevo.
 

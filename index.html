@@ -249,7 +249,25 @@
       </section>
       <section id="view-contrataciones" aria-labelledby="t-contrataciones" class="hidden">
         <h2 id="t-contrataciones" class="sr-only">Contrataciones</h2>
-        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+
+        <!-- S8.1 — Tabla de contratos (filas por JS desde CONTRATOS). En tablet, Fin se muestra bajo Inicio (S3.7) -->
+        <p id="contratos-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Cliente</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Agente</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Skills contratadas</th>
+                <th scope="col" class="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Inicio<span class="lg:hidden"> / Fin</span></th>
+                <th scope="col" class="hidden px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:table-cell lg:px-4 dark:text-slate-400">Fin</th>
+                <th scope="col" class="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Importe</th>
+                <th scope="col" class="px-3 py-3 text-right lg:px-4"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="contratos-tbody"></tbody>
+          </table>
+        </div>
       </section>
       <section id="view-errores" aria-labelledby="t-errores" class="hidden">
         <h2 id="t-errores" class="sr-only">Log de errores</h2>
@@ -731,6 +749,98 @@
     else if (b.dataset.action === 'eliminar-skill') eliminarSkill(s, origenBtn);
   });
   renderSkills();
+
+  /* ---------- Contrataciones (§8) ---------- */
+  // S8.5: importe = Σ precio/mes de las skills (SKILLS) × meses → 660, 900, 210, 360, 45, 390 €
+  const importe = c => precioMensual(c) * c.meses;
+  const ESTADO_CONTRATO = { activo: ['emerald', 'Activo'], finalizado: ['slate', 'Finalizado'], cancelado: ['red', 'Cancelado'] }; // S8.2
+  const badgeContrato = c => `<span class="sr-only">Contrato: </span>${badge(...ESTADO_CONTRATO[c.estado])}`;
+  const tbodyContratos = document.getElementById('contratos-tbody');
+
+  const renderContratos = () => {
+    setText('contratos-count', plural(CONTRATOS.length, 'contrato', 'contratos'));
+    tbodyContratos.innerHTML = CONTRATOS.map((c, i) => `
+      <tr class="${FILA}">
+        <td class="${CELDA}">
+          <p class="font-medium text-slate-900 dark:text-slate-100">${esc(c.cliente)}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">${esc(c.id)}</p>
+        </td>
+        <td class="${CELDA}">
+          <p class="text-slate-900 dark:text-slate-100">${esc(c.agente)}</p>
+          <p class="mt-1" title="Estado del contrato">${badgeContrato(c)}</p>
+        </td>
+        <td class="${CELDA}"><ul class="flex flex-wrap gap-1" aria-label="Skills contratadas">${c.skills.map(id => `<li class="${CHIP}">${esc(nombreSkill(id))}</li>`).join('')}</ul></td>
+        <td class="${CELDA} whitespace-nowrap text-slate-600 dark:text-slate-300">${esc(c.inicio)}<span class="block text-xs text-slate-500 lg:hidden dark:text-slate-400"><span class="sr-only">Fin: </span>${esc(c.fin)}</span></td>
+        <td class="${CELDA} hidden whitespace-nowrap text-slate-600 lg:table-cell dark:text-slate-300">${esc(c.fin)}</td>
+        <td class="${CELDA} whitespace-nowrap text-right font-semibold tabular-nums text-slate-900 dark:text-slate-100">${eur(importe(c))}</td>
+        <td class="${CELDA} text-right">${dropdown(`${c.id} · ${c.cliente}`, [
+          { accion: 'ver-contrato', id: c.id, icono: 'eye', texto: 'Ver detalle' },
+          { accion: 'factura', id: c.id, icono: 'arrow-down-tray', texto: 'Descargar factura' }
+        ], i >= CONTRATOS.length - 2)}</td>
+      </tr>`).join('');
+  };
+
+  const TH_MODAL = 'py-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400';
+  const verContrato = (c, origenBtn) => {                                                  // S8.4
+    const precios = c.skills.map(precioSkill);
+    const suma = precios.map(eur).join(' + ');
+    const calculo = `${c.skills.length > 1 ? `(${suma})` : suma} × ${plural(c.meses, 'mes', 'meses')} = ${eur(importe(c))}`;
+    openModal(origenBtn, {
+      titulo: 'Detalle de contrato',
+      subtitulo: `${c.id} · ${c.cliente} — ${c.agente}`,
+      ancho: 'max-w-2xl',
+      body: `
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-4">
+          ${campo('Estado', badge(...ESTADO_CONTRATO[c.estado]))}
+          ${campo('Inicio', esc(c.inicio))}
+          ${campo('Fin', esc(c.fin))}
+          ${campo('Duración', plural(c.meses, 'mes', 'meses'))}
+        </dl>
+        <table class="mt-6 w-full text-left text-sm">
+          <caption class="sr-only">Desglose del importe por skill</caption>
+          <thead class="border-b border-slate-200 dark:border-slate-800">
+            <tr>
+              <th scope="col" class="${TH_MODAL}">Skill</th>
+              <th scope="col" class="${TH_MODAL} text-right">Precio/mes</th>
+              <th scope="col" class="${TH_MODAL} text-right">Meses</th>
+              <th scope="col" class="${TH_MODAL} text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${c.skills.map(id => `<tr class="border-b border-slate-100 dark:border-slate-800">
+              <td class="py-2 text-slate-900 dark:text-slate-100">${esc(nombreSkill(id))} <span class="text-xs text-slate-500 dark:text-slate-400">${esc(id)}</span></td>
+              <td class="py-2 text-right tabular-nums">${eur(precioSkill(id))}</td>
+              <td class="py-2 text-right tabular-nums">${c.meses}</td>
+              <td class="py-2 text-right tabular-nums">${eur(precioSkill(id) * c.meses)}</td>
+            </tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colspan="3" class="pt-3 text-right font-medium text-slate-600 dark:text-slate-300">Total mensual</th>
+              <td class="pt-3 text-right tabular-nums">${eur(precioMensual(c))}</td>
+            </tr>
+            <tr>
+              <th scope="row" colspan="3" class="pt-1 text-right text-base font-semibold">Total del contrato</th>
+              <td class="pt-1 text-right text-base font-semibold tabular-nums">${eur(importe(c))}</td>
+            </tr>
+          </tfoot>
+        </table>
+        <p class="mt-4 font-mono text-xs text-slate-500 dark:text-slate-400">${calculo}</p>`,
+      footer: `<button type="button" data-factura class="${BTN_SECUNDARIO}"><span class="inline-flex items-center gap-1.5">${icon('arrow-down-tray')}Descargar factura</span></button>${FOOTER_CERRAR}`
+    });
+  };
+
+  document.getElementById('view-contrataciones').addEventListener('click', e => {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    const c = CONTRATOS.find(x => x.id === b.dataset.id);
+    if (!c) return;
+    const origenBtn = toggleDe(b);
+    closeMenus();                                                                           // S8.3: elegir una opción cierra el menú
+    if (b.dataset.action === 'ver-contrato') verContrato(c, origenBtn);
+    else origenBtn.focus();                                                                 // «Descargar factura»: sin lógica (CA-34)
+  });
+  renderContratos();
 
   /* ---------- Navegación por hash ---------- */
   const VISTAS = ['dashboard', 'usuarios', 'agentes', 'skills', 'contrataciones', 'errores'];
