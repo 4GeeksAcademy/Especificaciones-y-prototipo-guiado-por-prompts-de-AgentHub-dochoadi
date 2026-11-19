@@ -478,9 +478,39 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   | `curl :8000/index.html` | 200 | 200 | ✅ |
 
 - **Decisión**: aceptada. F4 completa a falta del tag `F4-qa` (lo crea el usuario).
-- **Commit**: `docs(F4): evalúa criterios E1-E12` · _hash: se anota en P5.1_
+- **Commit**: `docs(F4): evalúa criterios E1-E12` · `eddb4ad`
 - **Tag**: — (`F4-qa` pendiente del usuario)
 - **Errores**: ninguno nuevo.
 
 ## F5 — Entrega
-_(pendiente)_
+
+### P5.1 — README final, repo público y cierre (2026-11-19)
+- **Agente/skill**: sesión principal · skills `git-workflow`, `phase-logger`
+- **Prompt** (partes D–F del prompt de P4.1): README.md final en español (qué es AgentHub, enlace al repo, cómo verlo, 6 secciones, stack, estructura, flujo spec-first con fases/tags/commits, aclaración de E1, enlaces a SPECS.md, EVALUACION, PROMPTS, ERRORES y docs/stitch/); comprobar visibilidad del repo y que SPECS.md e index.html están en la raíz de main; cerrar CONTEXT.md (F5 lista a falta del tag) y docs/FASES.md; entradas P4.1, P4.2 y P5.1.
+- **Salida**:
+  - `README.md` reescrito: descripción, enlace al repositorio, cómo verlo (`index.html` o `python3 -m http.server 8000`), tabla de las 6 secciones, stack y restricciones, estructura del repo con enlaces, tabla de fases con commits clave y tags, aclaración de E1 (el `index.html` de `0dfaf38` es de la plantilla de 4Geeks y se eliminó en `a9b4fe4`, antes de F0) y enlace a la evaluación.
+  - `CONTEXT.md`: F3 cerrada, F4 completa, F5 lista; pendientes del usuario: tags `F4-qa` y `F5-entrega`.
+  - `docs/FASES.md`: sección «Estado de cierre» con commits y tags por fase.
+  - Esta entrada y el hash de P4.2 (`eddb4ad`).
+- **Comprobación del repositorio**: `gh repo view` **sin argumentos** devolvía `4GeeksAcademy/html-hello` (el remoto `upstream` de la plantilla, sin repo por defecto configurado en `gh`); con el nombre explícito, `gh repo view 4GeeksAcademy/Especificaciones-y-prototipo-guiado-por-prompts-de-AgentHub-dochoadi --json visibility` → **PUBLIC** (fork de `html-hello`). `git ls-tree --name-only origin/main` incluye `SPECS.md` e `index.html` en la raíz.
+- **Verificación** (2026-11-19, `verify-f4.sh` sobre `eddb4ad` + docs de F5):
+
+  | Comando | Esperado | Obtenido | |
+  |---|---|---|---|
+  | `git status --short` | README, CONTEXT, FASES, PROMPTS | ` M CONTEXT.md M README.md M docs/FASES.md M docs/PROMPTS.md` | ✅ |
+  | `grep -cE 'style=\|<style\|\.css\|rel="stylesheet"\|\.style\.'` | 0 | 0 | ✅ |
+  | `grep -c overflow-x-auto` · `<section` · `<symbol` · `<script src` · `<h1` | 0 · 6 · 27 · 1 · 1 | 0 · 6 · 27 · 1 · 1 | ✅ |
+  | `grep -n 'SKILLS.splice\|AGENTES.splice\|CONTRATOS.splice'` | sin resultados | sin resultados | ✅ |
+  | `node --check` script principal | OK | OK | ✅ |
+  | jsdom (8 pruebas) | 0 fallos | 643 OK · 0 fallos | ✅ |
+  | `git log --reverse --name-status -- SPECS.md index.html` | SPECS antes del index del prototipo | `0dfaf38` A · `a9b4fe4` D · `b3b4d64` A SPECS.md · `b91ee39` A index.html | ✅ |
+  | `git diff b3b4d64 -- SPECS.md` | vacío | vacío | ✅ |
+  | Enlaces locales del README | existen | todos (15) | ✅ |
+  | Visibilidad del repo | PUBLIC | PUBLIC | ✅ |
+  | `SPECS.md` e `index.html` en la raíz de `origin/main` | 2 | 2 | ✅ |
+  | `curl :8000/index.html` | 200 | 200 | ✅ |
+
+- **Decisión**: aceptada. Entrega lista a falta de los tags `F4-qa` y `F5-entrega`, que crea el usuario (en este prompt no se crean tags).
+- **Commit**: `docs(F5): README final y enlace de entrega` · _hash: ver `git log` (último commit de la entrega)_
+- **Tag**: — (`F5-entrega` pendiente del usuario)
+- **Errores**: ninguno nuevo.

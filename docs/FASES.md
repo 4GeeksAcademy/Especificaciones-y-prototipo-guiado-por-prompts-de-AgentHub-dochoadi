@@ -19,3 +19,16 @@ Mensajes de commit y tags canónicos: `docs/GIT.md`. Trabajo y commits desde Cod
 - **F3**: Tailwind CDN · sin `style`/CSS · JS vanilla · sidebar con activo · datos mínimos (5/4/4/4/6).
 - **F4**: pruebas en 1440 y 768 px · claro y oscuro · evidencia por criterio.
 - **F5**: repo público · `SPECS.md` e `index.html` visibles.
+
+## Estado de cierre (2026-11-19)
+| Fase | Estado | Commit(s) | Tag |
+|---|---|---|---|
+| F0 | cerrada | `ffc7cab` | `F0-estructura` |
+| F1 | cerrada | `b3b4d64` (solo `SPECS.md`), `c2e937a` | `F1-spec` |
+| F2 | cerrada | `3ebe8f3`, `43c4828`, `a5be32d` | `F2-stitch` |
+| F3 | cerrada | `b91ee39` … `ea5fd3d`, cierre `32504d5` | `F3-build` |
+| F4 | completa | `d830e18` … `bad921d` (ERR-005…012), `eddb4ad` | `F4-qa` (pendiente del usuario) |
+| F5 | lista | `docs(F5): README final y enlace de entrega` | `F5-entrega` (pendiente del usuario) |
+
+Puertas de salida: F3 con las 6 secciones navegables y verificadas por el usuario en navegador; F4 con E1–E12 ✅ y evidencia en `docs/EVALUACION.md`; F5 con repo público, `SPECS.md` e `index.html` en la raíz de `main` y `git log` con SPECS antes del HTML del prototipo.
+
