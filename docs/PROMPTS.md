@@ -106,7 +106,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
 - **Salida**: `ui-patterns/SKILL.md` y `tailwind-vanilla/SKILL.md` reescritos según SPECS: backdrop `bg-slate-900/60 backdrop-blur-sm`, dropdown `w-48` con apertura hacia arriba en las 2 últimas filas, Esc con foco al ⋮, modal con `hidden`↔`flex`, `overflow-hidden` en `body` y foco, colapsable `grid-rows` + `opacity` con `aria-controls`, tema en `<html>` con `try/catch` y `aria-pressed/label`, navegación por hash, paleta de badges §11 (8 variantes), tablas sin `overflow-x-auto`, sidebar `w-16 lg:w-64`. Nueva sección «Iconos: sprite SVG inline» con los 27 iconos exigidos. `frontend-builder.md` con sprite, orden de trabajo y parada de verificación tras cada sección. Registrados los hashes de F2.
 - **Revisión** (contra `docs/EVALUACION.md`): prepara E4 (sin `style`/CSS externo), E5–E8 (patrones dropdown/modal/colapsable alineados con CA-15…27), E9 (tema) y E12 (tablet). Sin HTML en el repo: E1 intacto. Huecos: el sprite con `<svg class="hidden">` (display:none) debe validarse visualmente en P3.1; la skill propone `absolute h-0 w-0 overflow-hidden` como respaldo.
 - **Decisión**: aceptada.
-- **Commit**: `docs(F3): alinea skills con SPECS.md` · _hash: pendiente_
+- **Commit**: `docs(F3): alinea skills con SPECS.md` · `345304a`
 - **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
 - **Errores**: ninguno.
 
@@ -132,9 +132,36 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
     3. **Iconos**: 27 únicos, no 28. Los trazos son **simplificados, escritos a mano**, no los paths oficiales de Heroicons: hay que revisarlos visualmente en #icon-test.
     4. **Sección extra**: `#icon-test` es la séptima `<section>`; CA-04 exige 6. Se elimina en P3.2.
 - **Decisión**: iterar — pendiente verificación visual en navegador (1440 y 768 px, claro y oscuro) y revertir sprite a `hidden` si pinta bien. Próxima entrada: P3.2 (Dashboard).
-- **Commit**: `feat(F3-layout): sidebar, topbar, modo oscuro y navegación` · _hash: pendiente_
+- **Commit**: `feat(F3-layout): sidebar, topbar, modo oscuro y navegación` · `b91ee39`
 - **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
 - **Errores**: ninguno registrado (ERR-004 no creado: el fallo del sprite no se ha observado).
+
+### P3.2 — Sección Dashboard: tarjetas de métricas y placeholder de gráfico (2026-11-19)
+- **Agente/skill**: sesión principal siguiendo `.claude/agents/frontend-builder.md` (no invocado como subagente, como en P3.1) · skills `tailwind-vanilla`, `ui-patterns`, `phase-logger`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F3, parte 2 (P3.2): sección Dashboard. Lee CLAUDE.md, CONTEXT.md, SPECS.md (§4, §10, §11 y CA aplicables), docs/stitch/01-dashboard.md y adaptacion.md (receta «tarjeta de métrica»). Usa frontend-builder. Edita SOLO index.html (y docs de cierre). No hagas commits. SPECS manda sobre Stitch.
+  > 1. #dashboard (conservar h2 sr-only): cabecera «Vista General» con texto de apoyo de SPECS (sin «Filtrar período»/«Exportar reporte» si SPECS no los pide); 4 tarjetas en `grid grid-cols-1 md:grid-cols-2 gap-5` (245,00 € · 31,50 € · 3 · 2 en rojo con enlace a #errores); iconos del sprite con acentos emerald/amber/indigo/red claro+dark; placeholder `h-72 w-full rounded-xl border-2 border-dashed` con chart-bar, «Gráfico de actividad semanal» y «Ejecuciones de agentes · pendiente de integrar».
+  > 2. Eliminar #icon-test: 6 `<section>` en `<main>`, 27 `<symbol>`. 3. Valores coherentes con el dataset. 4. Solo Tailwind, dark: en todo, semántico, sin overflow-x-auto, comprobar a 768 px. 5. grep + node --check, servidor en 8000. 6. Cierre: PROMPTS P3.2 y CONTEXT.
+- **Salida**: `index.html`:
+  - `#view-dashboard`: 3 `<article>` + 1 `<a href="#errores">` (tarjeta 4, `group`, anillo rojo en hover, foco `ring-indigo-500`) con la estructura de §11.2 y acentos de S4.3; marcador `role="img"` con `aria-label` (S4.5).
+  - Valores calculados en JS una sola vez al cargar (S4.2) desde nuevas constantes `SKILLS`, `AGENTES`, `CONTRATOS` (campos mínimos de §10.1, §10.2 y §10.4; se ampliarán en P3.3–P3.6). En el HTML solo hay «—» de reserva. `DESCUENTOS_MES = 31.5` hardcodeado (§10.6).
+  - `#view-icon-test` eliminado y sus referencias JS (`TEST`, título temporal, excepción en la navegación).
+- **Desviaciones del prompt (manda SPECS)**:
+  1. **Sin cabecera visible «Vista General»**: S3.1 dice que el título visible está en el topbar y el `<h2>` es `sr-only`; SPECS §4 no define cabecera ni texto de apoyo. Tampoco acciones «Filtrar período»/«Exportar reporte».
+  2. **Rejilla** `grid grid-cols-1 gap-6 sm:grid-cols-2` (S4.1), no `md:grid-cols-2 gap-5` (Stitch). A 768 px ambas dan 2 columnas.
+  3. **Texto del placeholder** «Ejecuciones de agentes · 12–18 nov 2026 (pendiente de integrar)» (S4.5).
+  4. **Tarjeta 4**: la tarjeta entera es el enlace (S4.4); «ver log de errores» es texto dentro de él, no un enlace anidado.
+- **Verificación**:
+  - `grep -cE 'style=|<style|\.css|rel="stylesheet"|\.style\.' index.html` → 0 (CA-02) · `overflow-x-auto` → 0 · único `<script src>` = CDN Tailwind, sin `fetch`/XHR (CA-03).
+  - `<section>` en `<main>` → **6** (CA-04) · `<symbol` → **27** · `icon-test` → 0.
+  - `node --check` del script → OK. Ejecución con DOM simulado: `245,00 €` · «Noviembre 2026 · 4 contratos activos» · `31,50 €` · «12,9 % sobre ingresos del mes» · `3` · «de 6 agentes desplegados» · `2` · «Nova, Vega» (CA-12).
+  - `http://localhost:8000/index.html` → 200.
+  - **No verificado en navegador**: no hay navegador en el Codespace y la instalación de Playwright/Chromium fue denegada por permisos. A 768 px, por cálculo: 768 − 64 (rail) − 48 (padding) = 656 px → 2 columnas de 316 px, sin scroll horizontal. Pendiente comprobar visualmente: 1440/768 px, claro/oscuro, CA-13 y CA-14 (clic → #errores), y el sprite (`absolute h-0 w-0` vs `hidden`, arrastrado de P3.1).
+- **Revisión** (contra `docs/EVALUACION.md`): E3 deja de fallar por la séptima sección (CA-04 → 6). E4 ✅ por grep. E9: todas las clases nuevas con par `dark:`. E10: Dashboard calculado desde el mismo dataset que usarán Agentes y Contrataciones. E11: `article`, `a`, `section`. E12 pendiente de capturas.
+- **Decisión**: aceptada a falta de la verificación visual.
+- **Commit**: `feat(F3-dashboard): tarjetas de métricas y placeholder de gráfico` · _hash: pendiente_
+- **Tag**: — (F3 sigue abierta)
+- **Errores**: ninguno registrado.
 
 ## F4 — QA
 _(pendiente)_
