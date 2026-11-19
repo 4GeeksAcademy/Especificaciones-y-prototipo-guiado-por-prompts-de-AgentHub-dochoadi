@@ -340,8 +340,53 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Sin verificar en navegador (ERR-004)**: que la tabla quepa a 768 px con Fin bajo Inicio (CA-10), menús de las 2 últimas filas sin recortar (CA-19), aspecto del modal con tabla de desglose, claro/oscuro (CA-40).
 - **Revisión**: E5 ⚠️ (4 de 5 secciones). E6 ⚠️ (3 de 4 «Ver detalle»). E7 ⚠️ (4 modales). E10 ⚠️ (importes calculados y coherentes con Agentes, Skills y Dashboard). E11 ⚠️ (4 de 5 tablas + tabla de desglose con `caption`, `thead`, `tbody`, `tfoot` y `th scope="row"`). E4 sigue ✅.
 - **Decisión**: aceptada a falta de la verificación visual manual.
-- **Commit**: `feat(F3-contrataciones): tabla y desglose` · _hash: se anota en el commit de P3.7_
+- **Commit**: `feat(F3-contrataciones): tabla y desglose` · `3e4116b`
 - **Tag**: —
+- **Errores**: ninguno nuevo.
+
+### P3.7 — Sección Log de errores: errores, trazas y resolver (2026-11-19)
+- **Agente/skill**: sesión principal siguiendo `.claude/agents/frontend-builder.md` · skills `ui-patterns`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; mismo prompt que P3.5):
+  > P3.7: ERRORES con LOG-001…LOG-008 y sus 8 trazas LITERALES de §10.5; orden descendente interpretando dd/mm/aaaa hh:mm:ss. Tabla S3.8: timestamp mono, agente (+cliente), badge de gravedad (Crítico red, Error orange, Aviso amber, Info sky), descripción con «LOG-00n:» en mono, estado (Abierto slate / Resuelto emerald), dropdown Ver detalle / Marcar como resuelto; fila crítica abierta resaltada (bg-red-50 / dark:bg-red-950/20). Modal «Detalle del error» con Skill implicada «Nombre (SK-0n)», traza en <pre> oscuro (sin botón copiar), Cerrar y Marcar como resuelto. Resolver desde menú o modal: fila a «Resuelto», recuento y píldora/punto del sidebar CALCULADOS desde ERRORES; ya resuelto → opción desactivada. Dashboard sin cambios.
+- **Salida**: `index.html`:
+  - Datos: constante `ERRORES` con las 8 entradas de §10.5 (id, ts, agente, skill, gravedad, estado, descripcion, traza). **Generada por script desde `SPECS.md`** (tabla + 8 bloques de traza): texto literal, trazas en template literals sin escapes (se comprobó que no contienen `` ` ``, `\` ni `${`).
+  - Marcado: `#errores-resumen` (`aria-live`) + tabla S3.8 con 6 `<th scope="col">`.
+  - `dropdown()` admite opciones `exito` (`text-emerald-700 dark:text-emerald-400`, S9.3) y `deshabilitado` (`disabled aria-disabled="true"` + `opacity-50 cursor-not-allowed`, §11.3).
+  - Lógica: `renderErrores()` (ordena una copia por `claveTs()` = aaaammddhhmmss descendente; timestamp `font-mono text-xs whitespace-nowrap`; agente + propietario desde `AGENTES`; `badgeGravedad()` con x-circle mini en Crítico; descripción con «LOG-00n:» en mono; `badgeEstadoError()` Abierto slate / Resuelto emerald con check; resaltado `bg-red-50 dark:bg-red-950/20` en crítico abierto; `opacity-60` en resueltos; menú «Marcar como resuelto» o «Ya resuelto» deshabilitado); `verError()` (modal `max-w-2xl`, `<dl>` de 7 campos de S9.4, «Traza completa» + `<pre>` con las clases literales de S9.4, pie «Marcar como resuelto» emerald solo si está abierto + «Cerrar»); `resolverError()` (S9.5: cambia el estado en memoria, re-renderiza, recalcula recuento y contador del sidebar y devuelve el foco al ⋮ nuevo de esa fila; no se puede reabrir); desde el modal: cierra y resuelve.
+  - **Contador del sidebar calculado**: `actualizarContadorErrores()` sustituye a la constante `6` de P3.1. Píldora (`lg:inline`) y punto de tablet se ocultan si llega a 0.
+- **Desviaciones / decisiones (manda SPECS)**:
+  1. **Recuento**: «8 entradas · 6 abiertas» (S9.1), no «n no resueltos» (Stitch / prompt).
+  2. **Modal**: campos de S9.4 en su orden (Timestamp, Agente, Propietario, Skill implicada, Gravedad, Estado, Descripción), no la cuadrícula de 4 de Stitch; «Skill implicada» como «Nombre (SK-0n)» según el prompt.
+  3. **Resalte de fila crítica abierta** (`bg-red-50 dark:bg-red-950/20`): no está en SPECS; se añade por el prompt y `docs/stitch/06-errores.md` («mantener»). Al resolver la fila pierde el resalte y recibe `opacity-60` (S9.5).
+  4. **«Ya resuelto»** deshabilitado (S9.3), no se oculta.
+  5. Sin pestañas de filtro, búsqueda, «Copiar identificador» ni «Copiar traza» de Stitch.
+  6. La descripción lleva «LOG-00n:» con dos puntos (prompt/Stitch); SPECS solo pide el ID delante.
+- **Verificación** (2026-11-19, `verify.sh`):
+
+  | Comando | Esperado | Obtenido | |
+  |---|---|---|---|
+  | `git status --short` | solo la parte | ` M index.html` (+ este fichero) | ✅ |
+  | `grep -cE 'style=\|<style\|\.css\|rel="stylesheet"\|\.style\.'` | 0 | 0 | ✅ |
+  | `grep -c overflow-x-auto` | 0 | 0 | ✅ |
+  | `grep -c '<section'` | 6 | 6 | ✅ |
+  | `grep -c '<symbol'` | 27 | 27 | ✅ |
+  | `grep -c 'Sección en construcción'` | 0 | 0 | ✅ |
+  | `grep -c '<script src'` | 1 | 1 | ✅ |
+  | `grep -n 'SKILLS.splice\|AGENTES.splice\|CONTRATOS.splice'` | sin resultados | sin resultados | ✅ |
+  | `node --check` script principal | OK | OK | ✅ |
+  | jsdom `test-errores.js` | 0 fallos | 151 OK · 0 fallos | ✅ |
+  | jsdom `test-contratos.js` | 0 fallos | 135 OK · 0 fallos | ✅ |
+  | jsdom `test-skills.js` | 0 fallos | 105 OK · 0 fallos | ✅ |
+  | jsdom `test-agentes.js` | 0 fallos | 133 OK · 0 fallos | ✅ |
+  | jsdom `test-usuarios.js` (regresión + navegación, nueva) | 0 fallos | 45 OK · 0 fallos | ✅ |
+  | `curl :8000/index.html` | 200 | 200 | ✅ |
+
+  La prueba del Log cubre: **CA-35** (orden LOG-008 → LOG-001; timestamp, agente + propietario, colores de gravedad red/orange/amber/sky, descripción con ID, estado); **CA-38** (LOG-001 y LOG-004 «Resuelto» al cargar, «Ya resuelto» deshabilitado, `opacity-60`); resalte solo en LOG-006 y LOG-003; CA-44 (solo Nova, Vega, Orion, Atlas, Lyra); dropdown y modal (CA-15…CA-23); para los 8: `<dl>` de 7 campos con valores correctos, Skill «Nombre (SK-0n)», pie según estado, sin botón copiar y **CA-36 traza idéntica carácter a carácter a la de `SPECS.md`** (leída del propio fichero), incluido `<a8f3c1@…>` escapado; **CA-37** (resolver LOG-006 desde el menú: badge «Resuelto» verde, gravedad intacta, «Ya resuelto», «5 abiertas», **sidebar 6 → 5**, foco al ⋮; resolver LOG-003 desde el modal: cierra, «4 abiertas», sidebar 4, foco al ⋮, al reabrir sin botón); Dashboard «Agentes fallando» sigue en 2; con 0 abiertas, píldora y punto ocultos; el estado se mantiene al navegar. La prueba de Usuarios añade: CA-24, CA-39, CA-07…CA-09, CA-04 (5 tablas con `thead`/`tbody`, 6 `section`, todos los `<button type="button">`) y CA-45.
+  - **Sin verificar en navegador (ERR-004)**: legibilidad de los 4 colores de gravedad y del resaltado crítico en claro/oscuro (CA-35, CA-40), `<pre>` con scroll interno, `disabled` real del menú, desaparición de la píldora (1440 px) y del punto (768 px), y ancho a 768 px: por cálculo ≈ 638 de 656 px (la columna Descripción queda estrecha y con varias líneas).
+- **Revisión**: E5 ⚠️ (5 de 5 secciones en DOM simulado). E6 ⚠️ (4 de 4 «Ver detalle» + Configurar). E7 ⚠️ (5 modales). E10 ⚠️ (`ERRORES` completo; contador del sidebar calculado). E11 ⚠️ (5 de 5 tablas). E4 sigue ✅. Pendiente solo la verificación visual.
+- **Decisión**: aceptada a falta de la verificación visual manual.
+- **Commit**: `feat(F3-log): errores, trazas y resolver` · _hash: se anota en el commit de cierre_
+- **Tag**: — (`F3-build` solo tras la verificación del usuario en navegador)
 - **Errores**: ninguno nuevo.
 
 ## F4 — QA

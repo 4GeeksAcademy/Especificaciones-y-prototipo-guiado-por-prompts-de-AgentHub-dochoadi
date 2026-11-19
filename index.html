@@ -271,7 +271,24 @@
       </section>
       <section id="view-errores" aria-labelledby="t-errores" class="hidden">
         <h2 id="t-errores" class="sr-only">Log de errores</h2>
-        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+
+        <!-- S9.1 — Tabla de errores (filas por JS desde ERRORES, timestamp descendente) -->
+        <p id="errores-resumen" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Timestamp</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Agente</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Gravedad</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Descripción</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Estado</th>
+                <th scope="col" class="px-3 py-3 text-right lg:px-4"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="errores-tbody"></tbody>
+          </table>
+        </div>
       </section>
     </main>
   </div>
@@ -354,6 +371,75 @@
     { id: 'US-06', nombre: 'Carlos Vidal', email: 'carlos.vidal@umbrella.com', empresa: 'Umbrella', rol: 'Administrador de cuenta', plan: 'Starter', estado: 'suspendido', alta: '25/01/2026', ultimoAcceso: '30/04/2026 17:12' },
     { id: 'US-07', nombre: 'Sofía Navarro', email: 'sofia.navarro@starklabs.io', empresa: 'Stark Labs', rol: 'Administradora de cuenta', plan: 'Starter', estado: 'pendiente', alta: '15/11/2026', ultimoAcceso: null }
   ];
+  const ERRORES = [ // §10.5 (orden ascendente por ID; la tabla se ordena por timestamp descendente, S9.1). Trazas literales para el <pre> (S9.4)
+    { id: 'LOG-001', ts: '28/04/2026 10:14:03', agente: 'Lyra', skill: 'SK-04', gravedad: 'Info', estado: 'resuelto',
+      descripcion: 'Reintento de envío de email completado al 2.º intento',
+      traza: `[2026-04-28T10:14:03Z] INFO agent=Lyra (AG-04) skill=SK-04 envio_emails task=tsk_4a1e7
+  attempt=1 smtp.send -> 421 4.7.0 Try again later (mx.umbrella.com)
+  retry.backoff=2000ms
+  attempt=2 smtp.send -> 250 OK message_id=<a8f3c1@mail.agenthub.io>
+  recipients=3 elapsed=2.41s result=RECOVERED` },
+    { id: 'LOG-002', ts: '29/10/2026 03:12:47', agente: 'Nova', skill: 'SK-01', gravedad: 'Error', estado: 'abierto',
+      descripcion: 'Timeout de 30 s al cargar una página externa',
+      traza: `[2026-10-29T03:12:47Z] ERROR agent=Nova (AG-05) skill=SK-01 navegacion_web task=tsk_9f21c
+TimeoutError: Navigation timeout of 30000 ms exceeded
+    at Page.goto (browser/page.js:212:15)
+    at WebSkill.fetch (skills/navegacion_web/index.js:88:22)
+    at AgentRuntime.runStep (runtime/agent.js:341:9)
+    at async Task.execute (runtime/task.js:57:5)
+url=https://proveedores.globex.com/salas?ciudad=madrid retries=3/3 result=FAILED` },
+    { id: 'LOG-003', ts: '30/10/2026 16:45:09', agente: 'Nova', skill: 'SK-03', gravedad: 'Crítico', estado: 'abierto',
+      descripcion: 'Token OAuth de calendario revocado: autenticación fallida',
+      traza: `[2026-10-30T16:45:09Z] CRITICAL agent=Nova (AG-05) skill=SK-03 gestion_calendario task=tsk_b07d2
+AuthError: invalid_grant - Token has been expired or revoked
+    at OAuthClient.refresh (integrations/oauth/client.js:131:11)
+    at CalendarSkill.createEvent (skills/gestion_calendario/index.js:64:18)
+    at AgentRuntime.runStep (runtime/agent.js:341:9)
+    at async Task.execute (runtime/task.js:57:5)
+provider=google_calendar account=eventos@globex.com action=AGENT_SET_FAILING` },
+    { id: 'LOG-004', ts: '12/11/2026 09:20:31', agente: 'Atlas', skill: 'SK-01', gravedad: 'Aviso', estado: 'resuelto',
+      descripcion: 'Rate limit alcanzado en navegación web (HTTP 429)',
+      traza: `[2026-11-12T09:20:31Z] WARN agent=Atlas (AG-01) skill=SK-01 navegacion_web task=tsk_c3390
+RateLimitWarning: HTTP 429 Too Many Requests
+    at WebSkill.fetch (skills/navegacion_web/index.js:88:22)
+    at RateLimiter.check (runtime/ratelimit.js:42:7)
+limit=60 req/min observed=61 retry_after=45s
+queued_requests=12 action=THROTTLE resolved_by=soporte@agenthub.io` },
+    { id: 'LOG-005', ts: '15/11/2026 22:05:58', agente: 'Orion', skill: 'SK-05', gravedad: 'Error', estado: 'abierto',
+      descripcion: 'Consulta SQL cancelada por superar 60 s',
+      traza: `[2026-11-15T22:05:58Z] ERROR agent=Orion (AG-02) skill=SK-05 consulta_sql task=tsk_d5e81
+QueryTimeoutError: canceling statement due to statement timeout (60000 ms)
+    at PgDriver.query (skills/consulta_sql/drivers/pg.js:77:13)
+    at SqlSkill.run (skills/consulta_sql/index.js:52:20)
+    at AgentRuntime.runStep (runtime/agent.js:341:9)
+    at async Task.execute (runtime/task.js:57:5)
+db=initech_pedidos_ro query="SELECT ... FROM pedidos JOIN lineas_pedido ..." rows_scanned=18432210` },
+    { id: 'LOG-006', ts: '17/11/2026 07:58:12', agente: 'Vega', skill: 'SK-05', gravedad: 'Crítico', estado: 'abierto',
+      descripcion: 'Credenciales de base de datos rechazadas',
+      traza: `[2026-11-17T07:58:12Z] CRITICAL agent=Vega (AG-06) skill=SK-05 consulta_sql task=tsk_e6f04
+AuthError: password authentication failed for user "vega_ro"
+    at PgDriver.connect (skills/consulta_sql/drivers/pg.js:31:9)
+    at SqlSkill.run (skills/consulta_sql/index.js:47:15)
+    at AgentRuntime.runStep (runtime/agent.js:341:9)
+    at async Task.execute (runtime/task.js:57:5)
+db=globex_contabilidad host=db.globex.internal:5432 action=AGENT_SET_FAILING` },
+    { id: 'LOG-007', ts: '18/11/2026 08:31:44', agente: 'Vega', skill: 'SK-02', gravedad: 'Error', estado: 'abierto',
+      descripcion: 'Timeout procesando un PDF de 214 páginas',
+      traza: `[2026-11-18T08:31:44Z] ERROR agent=Vega (AG-06) skill=SK-02 lectura_documentos task=tsk_f1a29
+TimeoutError: Document processing exceeded 120000 ms
+    at OcrEngine.process (skills/lectura_documentos/ocr.js:118:17)
+    at DocSkill.read (skills/lectura_documentos/index.js:73:21)
+    at AgentRuntime.runStep (runtime/agent.js:341:9)
+    at async Task.execute (runtime/task.js:57:5)
+file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
+    { id: 'LOG-008', ts: '18/11/2026 09:02:10', agente: 'Orion', skill: 'SK-01', gravedad: 'Info', estado: 'abierto',
+      descripcion: 'Navegación completada tras reintento automático',
+      traza: `[2026-11-18T09:02:10Z] INFO agent=Orion (AG-02) skill=SK-01 navegacion_web task=tsk_0b7c6
+  attempt=1 GET https://catalogo.proveedor-initech.com -> ECONNRESET
+  retry.backoff=1500ms
+  attempt=2 GET https://catalogo.proveedor-initech.com -> 200 OK (1.8s)
+  result=RECOVERED pages_extracted=4` }
+  ];
   const DESCUENTOS_MES = 31.5; // §10.6: hardcodeado (Acme 15 % de 90 € + STARTUP20 de Initech 20 % de 90 €)
 
   /* ---------- Utilidades ---------- */
@@ -388,12 +474,15 @@
   const ITEM_BASE = 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm';
   const ITEM_NORMAL = 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800';
   const ITEM_PELIGRO = 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20';
-  // opciones: [{ accion, id, icono, texto, peligro }]; arriba = true en las 2 últimas filas (§11.3)
+  const ITEM_EXITO = 'text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20';   // S9.3
+  const ITEM_OFF = 'cursor-not-allowed text-slate-500 opacity-50 dark:text-slate-400';                             // §11.3 deshabilitada
+  const claseItem = o => o.deshabilitado ? ITEM_OFF : o.peligro ? ITEM_PELIGRO : o.exito ? ITEM_EXITO : ITEM_NORMAL;
+  // opciones: [{ accion, id, icono, texto, peligro, exito, deshabilitado }]; arriba = true en las 2 últimas filas (§11.3)
   const dropdown = (nombre, opciones, arriba) => `
     <div class="relative inline-block text-left" data-dropdown>
       <button type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Acciones para ${esc(nombre)}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200">${icon('ellipsis-vertical', 'h-5 w-5')}</button>
       <div role="menu" class="absolute right-0 z-40 hidden w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900 ${arriba ? 'bottom-full mb-1' : 'mt-1'}">
-        ${opciones.map(o => `<button type="button" role="menuitem" data-action="${o.accion}" data-id="${esc(o.id)}" class="${ITEM_BASE} ${o.peligro ? ITEM_PELIGRO : ITEM_NORMAL}">${icon(o.icono)}${esc(o.texto)}</button>`).join('')}
+        ${opciones.map(o => `<button type="button" role="menuitem" data-action="${o.accion}" data-id="${esc(o.id)}"${o.deshabilitado ? ' disabled aria-disabled="true"' : ''} class="${ITEM_BASE} ${claseItem(o)}">${icon(o.icono)}${esc(o.texto)}</button>`).join('')}
       </div>
     </div>`;
   const toggleDe = btn => btn.closest('[data-dropdown]').querySelector('[data-dropdown-toggle]');
@@ -842,6 +931,114 @@
   });
   renderContratos();
 
+  /* ---------- Log de errores (§9) ---------- */
+  const GRAVEDAD = {                                                                        // S9.2
+    'Crítico': ['red', icon('x-circle', 'h-3 w-3')],
+    'Error': ['orange', ''],
+    'Aviso': ['amber', ''],
+    'Info': ['sky', '']
+  };
+  const badgeGravedad = e => badge(GRAVEDAD[e.gravedad][0], e.gravedad, GRAVEDAD[e.gravedad][1]);
+  const badgeEstadoError = e => e.estado === 'resuelto' ? badge('emerald', 'Resuelto', icon('check', 'h-3 w-3')) : badge('slate', 'Abierto');
+  const propietarioDe = nombre => AGENTES.find(a => a.nombre === nombre).propietario;       // dataset maestro (no la vista filtrada)
+  // dd/mm/aaaa hh:mm:ss → aaaammddhhmmss (comparable como texto)
+  const claveTs = ts => { const [f, h] = ts.split(' '); const [dd, mm, aa] = f.split('/'); return aa + mm + dd + h.replace(/:/g, ''); };
+  const abiertos = () => ERRORES.filter(e => e.estado === 'abierto').length;
+  const tbodyErrores = document.getElementById('errores-tbody');
+
+  // S3.2 / S9.5: contador del sidebar calculado desde ERRORES; se oculta (píldora y punto) si llega a 0
+  const errCnt = document.getElementById('errores-count');
+  const errDot = document.getElementById('errores-dot');
+  const actualizarContadorErrores = () => {
+    const n = abiertos();
+    errCnt.textContent = String(n);
+    errCnt.classList.toggle('lg:inline', n > 0);                                             // base `hidden` = oculto en tablet (allí se usa el punto)
+    errDot.classList.toggle('hidden', n === 0);
+  };
+
+  const renderErrores = () => {
+    const lista = [...ERRORES].sort((a, b) => claveTs(b.ts).localeCompare(claveTs(a.ts)));
+    const n = abiertos();
+    setText('errores-resumen', `${plural(lista.length, 'entrada', 'entradas')} · ${plural(n, 'abierta', 'abiertas')}`);
+    tbodyErrores.innerHTML = lista.map((e, i) => {
+      const resuelto = e.estado === 'resuelto';
+      const resalte = resuelto ? 'opacity-60' : e.gravedad === 'Crítico' ? 'bg-red-50 dark:bg-red-950/20' : '';
+      return `
+      <tr class="${FILA} ${resalte}" data-id="${esc(e.id)}">
+        <td class="${CELDA} whitespace-nowrap font-mono text-xs text-slate-600 dark:text-slate-300">${esc(e.ts)}</td>
+        <td class="${CELDA}">
+          <p class="font-medium text-slate-900 dark:text-slate-100">${esc(e.agente)}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">${esc(propietarioDe(e.agente))}</p>
+        </td>
+        <td class="${CELDA}">${badgeGravedad(e)}</td>
+        <td class="${CELDA} text-slate-600 dark:text-slate-300"><span class="font-mono text-xs text-slate-400 dark:text-slate-500">${esc(e.id)}:</span> ${esc(e.descripcion)}</td>
+        <td class="${CELDA}">${badgeEstadoError(e)}</td>
+        <td class="${CELDA} text-right">${dropdown(e.id, [
+          { accion: 'ver-error', id: e.id, icono: 'eye', texto: 'Ver detalle' },
+          resuelto
+            ? { accion: 'resolver-error', id: e.id, icono: 'check-circle', texto: 'Ya resuelto', deshabilitado: true }
+            : { accion: 'resolver-error', id: e.id, icono: 'check-circle', texto: 'Marcar como resuelto', exito: true }
+        ], i >= lista.length - 2)}</td>
+      </tr>`;
+    }).join('');
+  };
+
+  const toggleError = id => tbodyErrores.querySelector(`tr[data-id="${id}"] [data-dropdown-toggle]`);
+  const resolverError = e => {                                                               // S9.5 (solo cliente, sin reabrir)
+    if (e.estado === 'resuelto') return;
+    e.estado = 'resuelto';
+    renderErrores();
+    actualizarContadorErrores();
+    const t = toggleError(e.id);
+    if (t) t.focus();                                                                        // la fila se re-renderiza: foco al ⋮ nuevo
+  };
+
+  const BTN_EXITO = 'rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700';
+  const verError = (e, origenBtn) => {                                                       // S9.4
+    const sk = SKILLS.find(s => s.id === e.skill);
+    openModal(origenBtn, {
+      titulo: 'Detalle del error',
+      subtitulo: `${e.id} · ${e.agente}`,
+      ancho: 'max-w-2xl',
+      body: `
+        <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+          ${campo('Timestamp', `<span class="font-mono">${esc(e.ts)}</span>`)}
+          ${campo('Agente', esc(e.agente))}
+          ${campo('Propietario', esc(propietarioDe(e.agente)))}
+          ${campo('Skill implicada', `${esc(sk.nombre)} (${esc(sk.id)})`)}
+          ${campo('Gravedad', badgeGravedad(e))}
+          ${campo('Estado', badgeEstadoError(e))}
+          ${campo('Descripción', esc(e.descripcion), true)}
+        </dl>
+        <p class="mt-6 text-xs uppercase text-slate-500 dark:text-slate-400">Traza completa</p>
+        <pre class="mt-2 max-h-72 overflow-auto rounded-lg bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100 dark:bg-black/60">${esc(e.traza)}</pre>`,
+      footer: (e.estado === 'abierto'
+        ? `<button type="button" data-resolver-error="${esc(e.id)}" class="${BTN_EXITO}"><span class="inline-flex items-center gap-1.5">${icon('check-circle')}Marcar como resuelto</span></button>`
+        : '') + FOOTER_CERRAR
+    });
+  };
+  // «Marcar como resuelto» en el pie del modal: aplica S9.5 y cierra
+  modal.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-resolver-error]');
+    if (!b) return;
+    const e = ERRORES.find(x => x.id === b.dataset.resolverError);
+    closeModal();
+    if (e) resolverError(e);
+  });
+
+  document.getElementById('view-errores').addEventListener('click', ev => {
+    const b = ev.target.closest('[data-action]');
+    if (!b || b.disabled) return;
+    const e = ERRORES.find(x => x.id === b.dataset.id);
+    if (!e) return;
+    const origenBtn = toggleDe(b);
+    closeMenus();                                                                            // S9.3: elegir una opción habilitada cierra el menú
+    if (b.dataset.action === 'ver-error') verError(e, origenBtn);
+    else if (b.dataset.action === 'resolver-error') resolverError(e);
+  });
+  renderErrores();
+  actualizarContadorErrores();
+
   /* ---------- Navegación por hash ---------- */
   const VISTAS = ['dashboard', 'usuarios', 'agentes', 'skills', 'contrataciones', 'errores'];
   const TITULOS = {
@@ -882,15 +1079,7 @@
   window.addEventListener('hashchange', mostrar);
   mostrar();
 
-  /* ---------- Contador de errores abiertos (dato real en P3.7) ---------- */
-  const abiertas = 6;
-  const cnt = document.getElementById('errores-count');
-  const dot = document.getElementById('errores-dot');
-  if (abiertas > 0) {
-    cnt.textContent = String(abiertas);
-  } else {
-    cnt.classList.add('hidden'); dot.classList.add('hidden');
-  }
+  // El contador de errores abiertos del sidebar se calcula en «Log de errores» (actualizarContadorErrores)
 })();
 </script>
 </body>
