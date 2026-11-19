@@ -32,7 +32,7 @@
     <symbol id="i-ellipsis-vertical" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
-    <symbol id="i-cog-6-tooth" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-cog-6-tooth" viewBox="0 0 24 24"><path stroke-linejoin="round" d="M18.6 10.2L21.2 10.5L21.2 13.5L18.6 13.8L17.9 15.4L19.5 17.5L17.5 19.5L15.4 17.9L13.8 18.6L13.5 21.2L10.5 21.2L10.2 18.6L8.6 17.9L6.5 19.5L4.5 17.5L6.1 15.4L5.4 13.8L2.8 13.5L2.8 10.5L5.4 10.2L6.1 8.6L4.5 6.5L6.5 4.5L8.6 6.1L10.2 5.4L10.5 2.8L13.5 2.8L13.8 5.4L15.4 6.1L17.5 4.5L19.5 6.5L17.9 8.6Z"/><circle cx="12" cy="12" r="3"/></symbol>
     <symbol id="i-arrow-down-tray" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></symbol>
     <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
@@ -200,7 +200,23 @@
       </section>
       <section id="view-agentes" aria-labelledby="t-agentes" class="hidden">
         <h2 id="t-agentes" class="sr-only">Agentes</h2>
-        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+
+        <!-- S6.1 — Tabla de agentes (filas por JS desde AGENTES) -->
+        <p id="agentes-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Agente</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Propietario</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Estado</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Skills</th>
+                <th scope="col" class="px-3 py-3 text-right lg:px-4"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="agentes-tbody"></tbody>
+          </table>
+        </div>
       </section>
       <section id="view-skills" aria-labelledby="t-skills" class="hidden">
         <h2 id="t-skills" class="sr-only">Skills</h2>
@@ -249,13 +265,19 @@
     { id: 'SK-04', nombre: 'Envío de emails', precio: 15 },
     { id: 'SK-05', nombre: 'Consulta SQL', precio: 35 }
   ];
-  const AGENTES = [
-    { id: 'AG-01', nombre: 'Atlas', propietario: 'Acme Corp', estado: 'activo', skills: ['SK-01', 'SK-02'] },
-    { id: 'AG-02', nombre: 'Orion', propietario: 'Initech', estado: 'activo', skills: ['SK-01', 'SK-02', 'SK-05'] },
-    { id: 'AG-03', nombre: 'Sirius', propietario: 'Acme Corp', estado: 'activo', skills: ['SK-03', 'SK-04'] },
-    { id: 'AG-04', nombre: 'Lyra', propietario: 'Umbrella', estado: 'inactivo', skills: ['SK-04'] },
-    { id: 'AG-05', nombre: 'Nova', propietario: 'Globex', estado: 'fallando', skills: ['SK-01', 'SK-03', 'SK-04'] },
-    { id: 'AG-06', nombre: 'Vega', propietario: 'Globex', estado: 'fallando', skills: ['SK-02', 'SK-05'] }
+  const AGENTES = [ // §10.2 (promptSistema: texto literal; editable en memoria desde «Configurar», S6.5)
+    { id: 'AG-01', nombre: 'Atlas', propietario: 'Acme Corp', estado: 'activo', skills: ['SK-01', 'SK-02'],
+      promptSistema: 'Eres Atlas, agente de investigación de mercado de Acme Corp. Usa la navegación web para localizar información pública de competidores y la lectura de documentos para resumir informes. Responde en español, cita siempre la URL o el documento de origen y no inventes cifras.' },
+    { id: 'AG-02', nombre: 'Orion', propietario: 'Initech', estado: 'activo', skills: ['SK-01', 'SK-02', 'SK-05'],
+      promptSistema: 'Eres Orion, analista de operaciones de Initech. Consulta la base de datos de pedidos solo con sentencias SELECT, contrasta los resultados con los informes PDF del equipo y busca en la web referencias de proveedores. Entrega conclusiones en tablas y señala cualquier dato inconsistente.' },
+    { id: 'AG-03', nombre: 'Sirius', propietario: 'Acme Corp', estado: 'activo', skills: ['SK-03', 'SK-04'],
+      promptSistema: 'Eres Sirius, asistente de agenda comercial de Acme Corp. Gestiona el calendario del equipo de ventas: propone huecos, agenda reuniones con clientes y envía el email de confirmación con la agenda. No agendes fuera del horario 9:00–18:00 (CET).' },
+    { id: 'AG-04', nombre: 'Lyra', propietario: 'Umbrella', estado: 'inactivo', skills: ['SK-04'],
+      promptSistema: 'Eres Lyra, agente de seguimiento de Umbrella. Envía emails de seguimiento a clientes que no han respondido en 7 días, con tono cordial y breve. Nunca adjuntes documentos internos ni envíes más de un recordatorio por semana al mismo contacto.' },
+    { id: 'AG-05', nombre: 'Nova', propietario: 'Globex', estado: 'fallando', skills: ['SK-01', 'SK-03', 'SK-04'],
+      promptSistema: 'Eres Nova, coordinadora de eventos de Globex. Busca en la web salas y proveedores, reserva fechas en el calendario corporativo y envía invitaciones por email a los asistentes. Confirma siempre con el responsable antes de cerrar una reserva.' },
+    { id: 'AG-06', nombre: 'Vega', propietario: 'Globex', estado: 'fallando', skills: ['SK-02', 'SK-05'],
+      promptSistema: 'Eres Vega, agente de reporting financiero de Globex. Extrae datos de la base de datos contable con consultas de solo lectura y cruza las cifras con los PDF de facturas. Genera un resumen mensual y marca cualquier diferencia superior al 1 %.' }
   ];
   const CONTRATOS = [
     { id: 'CT-01', cliente: 'Acme Corp', agente: 'Atlas', skills: ['SK-01', 'SK-02'], inicio: '01/01/2026', fin: '31/12/2026', meses: 12, estado: 'activo' },
@@ -370,12 +392,13 @@
   /* ---------- Modal (genérico) ---------- */
   const modal = document.getElementById('modal');
   let origen = null;
-  const openModal = (btn, { titulo = '', subtitulo = '', ancho = 'max-w-lg', body: html = '', footer } = {}) => {
+  // footer por defecto = «Cerrar»: un modal con pie propio (Configurar) no se arrastra a la siguiente apertura
+  const openModal = (btn, { titulo = '', subtitulo = '', ancho = 'max-w-lg', body: html = '', footer = FOOTER_CERRAR } = {}) => {
     origen = btn || null;
     document.getElementById('modal-title').textContent = titulo;
     document.getElementById('modal-subtitle').textContent = subtitulo;
     document.getElementById('modal-body').innerHTML = html;
-    if (footer !== undefined) document.getElementById('modal-footer').innerHTML = footer;
+    document.getElementById('modal-footer').innerHTML = footer;
     const panel = document.getElementById('modal-panel');
     panel.className = panel.className.replace(/max-w-\S+/, ancho);
     modal.classList.remove('hidden'); modal.classList.add('flex');
@@ -484,6 +507,117 @@
     else if (b.dataset.action === 'eliminar-usuario') eliminarUsuario(u, origenBtn);
   });
   renderUsuarios();
+
+  /* ---------- Agentes (§6) ---------- */
+  const ESTADO_AGENTE = {                                                                   // S6.2: [variante, texto, color del punto]
+    activo: ['emerald', 'Activo', 'bg-emerald-500'],
+    inactivo: ['slate', 'Inactivo', 'bg-slate-400'],
+    fallando: ['red', 'Fallando', 'bg-red-500 animate-pulse']
+  };
+  const badgeEstadoAgente = a => {
+    const [variante, texto, punto] = ESTADO_AGENTE[a.estado];
+    return badge(variante, texto, `<span class="h-1.5 w-1.5 rounded-full ${punto}" aria-hidden="true"></span>`);
+  };
+  const CHIP = 'rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+  const nombreSkill = id => SKILLS.find(s => s.id === id).nombre;
+  const chipsSkills = a => a.skills.map(id => `<li class="${CHIP}">${esc(nombreSkill(id))}</li>`).join('');
+  const BTN_PRIMARIO = 'rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700';
+  // Decisión P3.3b: «Eliminar» oculta el ID en la vista; AGENTES no se muta (Dashboard, Usuarios, Skills,
+  // Contrataciones y Log siguen leyendo el dataset maestro completo; S6.6).
+  const agentesOcultos = new Set();
+  const agentesVisibles = () => AGENTES.filter(a => !agentesOcultos.has(a.id));
+  const tbodyAgentes = document.getElementById('agentes-tbody');
+
+  const renderAgentes = () => {
+    // Conserva qué listas estaban expandidas al re-renderizar tras un borrado
+    const abiertos = new Set([...tbodyAgentes.querySelectorAll('[data-collapse-toggle][aria-expanded="true"]')]
+      .map(b => b.getAttribute('aria-controls')));
+    const lista = agentesVisibles();
+    setText('agentes-count', plural(lista.length, 'agente', 'agentes'));
+    tbodyAgentes.innerHTML = lista.length ? lista.map((a, i) => {
+      const panelId = `skills-${a.id}`;
+      const abierto = abiertos.has(panelId);
+      return `
+      <tr class="${FILA}">
+        <td class="${CELDA} align-top">
+          <div class="flex items-center gap-3">
+            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-indigo-100 font-semibold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300" aria-hidden="true">${esc(a.nombre.charAt(0))}</span>
+            <div>
+              <p class="font-medium text-slate-900 dark:text-slate-100">${esc(a.nombre)}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">${esc(a.id)}</p>
+            </div>
+          </div>
+        </td>
+        <td class="${CELDA} align-top text-slate-600 dark:text-slate-300">${esc(a.propietario)}</td>
+        <td class="${CELDA} align-top">${badgeEstadoAgente(a)}</td>
+        <td class="${CELDA} align-top">
+          <div>
+            <button type="button" data-collapse-toggle aria-expanded="${abierto}" aria-controls="${panelId}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">Skills (${a.skills.length}) ${icon('chevron-down', `h-4 w-4 transition-transform duration-300${abierto ? ' rotate-180' : ''}`)}</button>
+            <div id="${panelId}" class="grid ${abierto ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'} transition-all duration-300 ease-in-out">
+              <div class="overflow-hidden">
+                <ul class="mt-2 flex flex-wrap gap-1.5" aria-label="Skills de ${esc(a.nombre)}">${chipsSkills(a)}</ul>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class="${CELDA} align-top text-right">${dropdown(a.nombre, [
+          { accion: 'configurar-agente', id: a.id, icono: 'cog-6-tooth', texto: 'Configurar' },
+          { accion: 'eliminar-agente', id: a.id, icono: 'trash', texto: 'Eliminar', peligro: true }
+        ], i >= lista.length - 2)}</td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="5" class="${VACIA}">No hay agentes.</td></tr>`;
+  };
+
+  const contarCaracteres = n => plural(n, 'carácter', 'caracteres');
+  const configurarAgente = (a, origenBtn) => {                                              // S6.5
+    openModal(origenBtn, {
+      titulo: 'Configurar agente',
+      subtitulo: `${a.nombre} · ${a.propietario}`,
+      ancho: 'max-w-2xl',
+      body: `
+        <div class="flex flex-wrap items-center gap-2">
+          ${badgeEstadoAgente(a)}
+          <ul class="flex flex-wrap gap-1.5" aria-label="Skills de ${esc(a.nombre)}">${chipsSkills(a)}</ul>
+        </div>
+        <div class="mt-5 flex flex-col gap-2">
+          <label for="prompt-sistema" class="text-sm font-medium">Prompt de sistema</label>
+          <textarea id="prompt-sistema" rows="10" aria-describedby="prompt-count" class="w-full rounded-lg border border-slate-300 bg-white p-3 font-mono text-sm text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">${esc(a.promptSistema)}</textarea>
+          <p id="prompt-count" class="text-xs text-slate-500 dark:text-slate-400">${contarCaracteres(a.promptSistema.length)}</p>
+        </div>`,
+      footer: `<button type="button" data-close-modal class="${BTN_SECUNDARIO}">Cancelar</button>
+        <button type="button" data-guardar-agente="${esc(a.id)}" class="${BTN_PRIMARIO}">Guardar cambios</button>`
+    });
+  };
+  // Recuento de caracteres en vivo (S6.5)
+  modal.addEventListener('input', e => {
+    if (e.target.id === 'prompt-sistema') setText('prompt-count', contarCaracteres(e.target.value.length));
+  });
+  // «Guardar cambios»: guarda en el objeto en memoria y cierra (Cancelar, ✕, backdrop y Esc no guardan)
+  modal.addEventListener('click', e => {
+    const b = e.target.closest('[data-guardar-agente]');
+    if (!b) return;
+    const a = AGENTES.find(x => x.id === b.dataset.guardarAgente);
+    if (a) a.promptSistema = document.getElementById('prompt-sistema').value;
+    closeModal();
+  });
+
+  const eliminarAgente = (a, origenBtn) => {                                                // S6.6
+    if (!confirm(`¿Eliminar el agente ${a.nombre}? La acción solo afecta a esta vista.`)) { origenBtn.focus(); return; }
+    agentesOcultos.add(a.id);
+    renderAgentes();                                                                        // recuento y 2 últimas filas hacia arriba
+  };
+
+  document.getElementById('view-agentes').addEventListener('click', e => {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    const a = AGENTES.find(x => x.id === b.dataset.id);
+    if (!a) return;
+    const origenBtn = toggleDe(b);
+    closeMenus();                                                                           // S6.4: elegir una opción cierra el menú
+    if (b.dataset.action === 'configurar-agente') configurarAgente(a, origenBtn);
+    else if (b.dataset.action === 'eliminar-agente') eliminarAgente(a, origenBtn);
+  });
+  renderAgentes();
 
   /* ---------- Navegación por hash ---------- */
   const VISTAS = ['dashboard', 'usuarios', 'agentes', 'skills', 'contrataciones', 'errores'];
