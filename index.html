@@ -985,6 +985,12 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     errCnt.textContent = String(n);
     errCnt.classList.toggle('lg:inline', n > 0);                                             // base `hidden` = oculto en tablet (allí se usa el punto)
     errDot.classList.toggle('hidden', n === 0);
+    // ERR-010: el aria-label del enlace sustituía al contador; el recuento se incluye en el nombre accesible
+    // (empieza por el texto visible «Log de errores», WCAG 2.5.3)
+    const enlace = document.querySelector('[data-nav="errores"]');
+    const nombre = n ? `Log de errores (${plural(n, 'abierto', 'abiertos')})` : 'Log de errores';
+    enlace.setAttribute('aria-label', nombre);
+    enlace.setAttribute('title', nombre);
   };
 
   const renderErrores = () => {
