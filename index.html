@@ -608,6 +608,10 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     panel.classList.toggle('opacity-100', abrir);
     panel.classList.toggle('grid-rows-[0fr]', !abrir);
     panel.classList.toggle('opacity-0', !abrir);
+    // ERR-009: `invisible` saca los chips del árbol de accesibilidad al colapsar; `visibility` se anima de forma
+    // discreta con transition-all (sigue visible hasta acabar los 300 ms), así que la transición de CA-26 se conserva
+    panel.classList.toggle('visible', abrir);
+    panel.classList.toggle('invisible', !abrir);
     const chev = b.querySelector('svg');
     if (chev) chev.classList.toggle('rotate-180', abrir);
     b.setAttribute('aria-expanded', String(abrir));
@@ -725,7 +729,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
         <td class="${CELDA} align-top">
           <div>
             <button type="button" data-collapse-toggle aria-expanded="${abierto}" aria-controls="${panelId}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">Skills (${a.skills.length}) ${icon('chevron-down', `h-4 w-4 transition-transform duration-300${abierto ? ' rotate-180' : ''}`)}</button>
-            <div id="${panelId}" class="grid ${abierto ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'} transition-all duration-300 ease-in-out">
+            <div id="${panelId}" class="grid ${abierto ? 'grid-rows-[1fr] opacity-100 visible' : 'grid-rows-[0fr] opacity-0 invisible'} transition-all duration-300 ease-in-out">
               <div class="overflow-hidden">
                 <ul class="mt-2 flex flex-wrap gap-1.5" aria-label="Skills de ${esc(a.nombre)}">${chipsSkills(a)}</ul>
               </div>
