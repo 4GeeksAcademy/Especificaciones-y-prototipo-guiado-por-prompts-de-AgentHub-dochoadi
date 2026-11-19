@@ -182,7 +182,7 @@
         <h2 id="t-usuarios" class="sr-only">Usuarios</h2>
 
         <!-- S5.1 — Tabla de usuarios (filas por JS desde USUARIOS) -->
-        <p id="usuarios-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <p id="usuarios-count" tabindex="-1" class="mb-3 text-sm text-slate-500 focus:outline-none dark:text-slate-400" aria-live="polite"></p>
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <table class="w-full text-left text-sm">
             <thead class="border-b border-slate-200 dark:border-slate-800">
@@ -202,7 +202,7 @@
         <h2 id="t-agentes" class="sr-only">Agentes</h2>
 
         <!-- S6.1 — Tabla de agentes (filas por JS desde AGENTES) -->
-        <p id="agentes-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <p id="agentes-count" tabindex="-1" class="mb-3 text-sm text-slate-500 focus:outline-none dark:text-slate-400" aria-live="polite"></p>
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <table class="w-full text-left text-sm">
             <thead class="border-b border-slate-200 dark:border-slate-800">
@@ -231,7 +231,7 @@
         </aside>
 
         <!-- S7.2 — Catálogo de skills (filas por JS desde SKILLS) -->
-        <p id="skills-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <p id="skills-count" tabindex="-1" class="mb-3 text-sm text-slate-500 focus:outline-none dark:text-slate-400" aria-live="polite"></p>
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <table class="w-full text-left text-sm">
             <thead class="border-b border-slate-200 dark:border-slate-800">
@@ -486,6 +486,13 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
       </div>
     </div>`;
   const toggleDe = btn => btn.closest('[data-dropdown]').querySelector('[data-dropdown-toggle]');
+  // ERR-007: tras eliminar, el ⋮ de origen desaparece al re-renderizar; el foco pasa al ⋮ de la fila que ocupa
+  // su lugar (o la anterior si era la última) y, si la tabla queda vacía, al recuento (tabindex="-1")
+  const indiceToggle = (tbody, btn) => [...tbody.querySelectorAll('[data-dropdown-toggle]')].indexOf(btn);
+  const focoTrasBorrar = (tbody, idx, countId) => {
+    const t = tbody.querySelectorAll('[data-dropdown-toggle]');
+    (t[Math.min(idx, t.length - 1)] || document.getElementById(countId)).focus();
+  };
 
   /* ---------- Modal: piezas de contenido (§11.4) ---------- */
   const BTN_SECUNDARIO = 'rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800';
@@ -654,8 +661,10 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
 
   const eliminarUsuario = (u, origenBtn) => {                                             // S5.5
     if (!confirm(`¿Eliminar a ${u.nombre}? La acción solo afecta a esta vista.`)) { origenBtn.focus(); return; }
+    const idx = indiceToggle(tbodyUsuarios, origenBtn);
     USUARIOS.splice(USUARIOS.indexOf(u), 1);
     renderUsuarios();                                                                       // recalcula las 2 filas que abren hacia arriba
+    focoTrasBorrar(tbodyUsuarios, idx, 'usuarios-count');
   };
 
   document.getElementById('view-usuarios').addEventListener('click', e => {
@@ -765,8 +774,10 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
 
   const eliminarAgente = (a, origenBtn) => {                                                // S6.6
     if (!confirm(`¿Eliminar el agente ${a.nombre}? La acción solo afecta a esta vista.`)) { origenBtn.focus(); return; }
+    const idx = indiceToggle(tbodyAgentes, origenBtn);
     agentesOcultos.add(a.id);
     renderAgentes();                                                                        // recuento y 2 últimas filas hacia arriba
+    focoTrasBorrar(tbodyAgentes, idx, 'agentes-count');
   };
 
   document.getElementById('view-agentes').addEventListener('click', e => {
@@ -836,8 +847,10 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
 
   const eliminarSkill = (s, origenBtn) => {                                                 // S7.6
     if (!confirm(`¿Eliminar la skill ${s.nombre} del catálogo? La acción solo afecta a esta vista.`)) { origenBtn.focus(); return; }
+    const idx = indiceToggle(tbodySkills, origenBtn);
     skillsOcultas.add(s.id);
     renderSkills();
+    focoTrasBorrar(tbodySkills, idx, 'skills-count');
   };
 
   document.getElementById('view-skills').addEventListener('click', e => {
