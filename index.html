@@ -962,7 +962,8 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     setText('errores-resumen', `${plural(lista.length, 'entrada', 'entradas')} · ${plural(n, 'abierta', 'abiertas')}`);
     tbodyErrores.innerHTML = lista.map((e, i) => {
       const resuelto = e.estado === 'resuelto';
-      const resalte = resuelto ? 'opacity-60' : e.gravedad === 'Crítico' ? 'bg-red-50 dark:bg-red-950/20' : '';
+      // ERR-005: sin opacity-60 (bajaba todo el texto de la fila por debajo de 4,5:1); el estado ya lo indica el badge «Resuelto» con icono
+      const resalte = resuelto ? 'bg-slate-50 dark:bg-slate-800/40' : e.gravedad === 'Crítico' ? 'bg-red-50/50 dark:bg-red-950/20' : '';
       return `
       <tr class="${FILA} ${resalte}" data-id="${esc(e.id)}">
         <td class="${CELDA} whitespace-nowrap font-mono text-xs text-slate-600 dark:text-slate-300">${esc(e.ts)}</td>
@@ -971,7 +972,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
           <p class="text-xs text-slate-500 dark:text-slate-400">${esc(propietarioDe(e.agente))}</p>
         </td>
         <td class="${CELDA}">${badgeGravedad(e)}</td>
-        <td class="${CELDA} text-slate-600 dark:text-slate-300"><span class="font-mono text-xs text-slate-400 dark:text-slate-500">${esc(e.id)}:</span> ${esc(e.descripcion)}</td>
+        <td class="${CELDA} text-slate-600 dark:text-slate-300"><span class="font-mono text-xs text-slate-600 dark:text-slate-400">${esc(e.id)}:</span> ${esc(e.descripcion)}</td>
         <td class="${CELDA}">${badgeEstadoError(e)}</td>
         <td class="${CELDA} text-right">${dropdown(e.id, [
           { accion: 'ver-error', id: e.id, icono: 'eye', texto: 'Ver detalle' },
@@ -993,7 +994,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     if (t) t.focus();                                                                        // la fila se re-renderiza: foco al ⋮ nuevo
   };
 
-  const BTN_EXITO = 'rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700';
+  const BTN_EXITO = 'rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800';   // ERR-005: emerald-600 daba 3,77:1
   const verError = (e, origenBtn) => {                                                       // S9.4
     const sk = SKILLS.find(s => s.id === e.skill);
     openModal(origenBtn, {
