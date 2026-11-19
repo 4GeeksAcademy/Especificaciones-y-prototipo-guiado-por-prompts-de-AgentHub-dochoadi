@@ -107,11 +107,11 @@
         <p id="page-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Resumen de noviembre 2026</p>
       </div>
       <div class="flex items-center gap-2">
-        <button id="theme-toggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+        <button id="theme-toggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900">
           <svg class="h-5 w-5 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-moon"/></svg>
           <svg class="hidden h-5 w-5 dark:block" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-sun"/></svg>
         </button>
-        <button type="button" aria-label="Notificaciones" class="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+        <button type="button" aria-label="Notificaciones" class="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
           <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" aria-hidden="true"></span>
         </button>
@@ -301,13 +301,13 @@
           <h3 id="modal-title" class="text-lg font-semibold"></h3>
           <p id="modal-subtitle" class="text-sm text-slate-500 dark:text-slate-400"></p>
         </div>
-        <button type="button" data-close-modal aria-label="Cerrar" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+        <button type="button" data-close-modal aria-label="Cerrar" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-x-mark"/></svg>
         </button>
       </div>
       <div id="modal-body" class="p-5"></div>
       <div id="modal-footer" class="flex justify-end gap-3 border-t border-slate-200 p-4 dark:border-slate-800">
-        <button type="button" data-close-modal class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">Cerrar</button>
+        <button type="button" data-close-modal class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900">Cerrar</button>
       </div>
     </div>
   </div>
@@ -449,6 +449,8 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
   const setText = (id, txt) => { document.getElementById(id).textContent = txt; };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+  // ERR-011: anillo de foco visible común (4,5:1 en claro / 4,0:1 en oscuro) para botones, enlaces y controles
+  const FOCO = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900';
   const icon = (id, cls = 'h-4 w-4') => `<svg class="${cls} shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-${id}"/></svg>`;
 
   /* ---------- Badge (§11.5): badge(variante, texto, prefijo) con la paleta de §11 ---------- */
@@ -471,17 +473,17 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
   const CELDA = 'px-3 py-3 align-middle lg:px-4';
   const FILA = 'border-b border-slate-100 last:border-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50';
   const VACIA = 'px-3 py-8 text-center text-slate-500 lg:px-4 dark:text-slate-400';
-  const ITEM_BASE = 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm';
-  const ITEM_NORMAL = 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800';
-  const ITEM_PELIGRO = 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20';
-  const ITEM_EXITO = 'text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20';   // S9.3
+  const ITEM_BASE = 'flex w-full items-center gap-2 px-3 py-2 text-left text-sm focus-visible:outline-none';
+  const ITEM_NORMAL = 'text-slate-700 hover:bg-slate-100 focus-visible:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus-visible:bg-slate-800';
+  const ITEM_PELIGRO = 'text-red-600 hover:bg-red-50 focus-visible:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 dark:focus-visible:bg-red-900/20';
+  const ITEM_EXITO = 'text-emerald-700 hover:bg-emerald-50 focus-visible:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20 dark:focus-visible:bg-emerald-900/20';   // S9.3
   const ITEM_OFF = 'cursor-not-allowed text-slate-500 opacity-50 dark:text-slate-400';                             // §11.3 deshabilitada
   const claseItem = o => o.deshabilitado ? ITEM_OFF : o.peligro ? ITEM_PELIGRO : o.exito ? ITEM_EXITO : ITEM_NORMAL;
   // opciones: [{ accion, id, icono, texto, peligro, exito, deshabilitado }]; arriba = true en las 2 últimas filas (§11.3)
   // ERR-008: id del menú derivado del ID del registro (US-/AG-/SK-/CT-/LOG- son únicos entre secciones)
   const dropdown = (nombre, opciones, arriba, mid = `menu-${esc(opciones[0].id)}`) => `
     <div class="relative inline-block text-left" data-dropdown>
-      <button type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="${mid}" aria-label="Acciones para ${esc(nombre)}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200">${icon('ellipsis-vertical', 'h-5 w-5')}</button>
+      <button type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="${mid}" aria-label="Acciones para ${esc(nombre)}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 ${FOCO}">${icon('ellipsis-vertical', 'h-5 w-5')}</button>
       <div role="menu" id="${mid}" aria-label="Acciones para ${esc(nombre)}" class="absolute right-0 z-40 hidden w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900 ${arriba ? 'bottom-full mb-1' : 'mt-1'}">
         ${opciones.map(o => `<button type="button" role="menuitem" data-action="${o.accion}" data-id="${esc(o.id)}"${o.deshabilitado ? ' disabled aria-disabled="true"' : ''} class="${ITEM_BASE} ${claseItem(o)}">${icon(o.icono)}${esc(o.texto)}</button>`).join('')}
       </div>
@@ -496,7 +498,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
   };
 
   /* ---------- Modal: piezas de contenido (§11.4) ---------- */
-  const BTN_SECUNDARIO = 'rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800';
+  const BTN_SECUNDARIO = 'rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 ' + FOCO;
   const FOOTER_CERRAR = `<button type="button" data-close-modal class="${BTN_SECUNDARIO}">Cerrar</button>`;
   const campo = (dt, dd, ancho = false) => `<div${ancho ? ' class="sm:col-span-2"' : ''}><dt class="text-xs uppercase text-slate-500 dark:text-slate-400">${dt}</dt><dd class="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">${dd}</dd></div>`;
 
@@ -697,7 +699,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
   const CHIP = 'rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300';
   const nombreSkill = id => SKILLS.find(s => s.id === id).nombre;
   const chipsSkills = a => a.skills.map(id => `<li class="${CHIP}">${esc(nombreSkill(id))}</li>`).join('');
-  const BTN_PRIMARIO = 'rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700';
+  const BTN_PRIMARIO = 'rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 ' + FOCO;
   // Decisión P3.3b: «Eliminar» oculta el ID en la vista; AGENTES no se muta (Dashboard, Usuarios, Skills,
   // Contrataciones y Log siguen leyendo el dataset maestro completo; S6.6).
   const agentesOcultos = new Set();
@@ -728,7 +730,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
         <td class="${CELDA} align-top">${badgeEstadoAgente(a)}</td>
         <td class="${CELDA} align-top">
           <div>
-            <button type="button" data-collapse-toggle aria-expanded="${abierto}" aria-controls="${panelId}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">Skills (${a.skills.length}) ${icon('chevron-down', `h-4 w-4 transition-transform duration-300${abierto ? ' rotate-180' : ''}`)}</button>
+            <button type="button" data-collapse-toggle aria-expanded="${abierto}" aria-controls="${panelId}" class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 rounded ${FOCO}">Skills (${a.skills.length}) ${icon('chevron-down', `h-4 w-4 transition-transform duration-300${abierto ? ' rotate-180' : ''}`)}</button>
             <div id="${panelId}" class="grid ${abierto ? 'grid-rows-[1fr] opacity-100 visible' : 'grid-rows-[0fr] opacity-0 invisible'} transition-all duration-300 ease-in-out">
               <div class="overflow-hidden">
                 <ul class="mt-2 flex flex-wrap gap-1.5" aria-label="Skills de ${esc(a.nombre)}">${chipsSkills(a)}</ul>
@@ -757,7 +759,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
         </div>
         <div class="mt-5 flex flex-col gap-2">
           <label for="prompt-sistema" class="text-sm font-medium">Prompt de sistema</label>
-          <textarea id="prompt-sistema" rows="10" aria-describedby="prompt-count" class="w-full rounded-lg border border-slate-300 bg-white p-3 font-mono text-sm text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">${esc(a.promptSistema)}</textarea>
+          <textarea id="prompt-sistema" rows="10" aria-describedby="prompt-count" class="w-full rounded-lg border border-slate-300 bg-white p-3 font-mono text-sm text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">${esc(a.promptSistema)}</textarea>
           <p id="prompt-count" class="text-xs text-slate-500 dark:text-slate-400">${contarCaracteres(a.promptSistema.length)}</p>
         </div>`,
       footer: `<button type="button" data-close-modal class="${BTN_SECUNDARIO}">Cancelar</button>
@@ -1031,7 +1033,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     if (t) t.focus();                                                                        // la fila se re-renderiza: foco al ⋮ nuevo
   };
 
-  const BTN_EXITO = 'rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800';   // ERR-005: emerald-600 daba 3,77:1
+  const BTN_EXITO = 'rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 ' + FOCO;   // ERR-005: emerald-600 daba 3,77:1
   const verError = (e, origenBtn) => {                                                       // S9.4
     const sk = SKILLS.find(s => s.id === e.skill);
     openModal(origenBtn, {
@@ -1087,7 +1089,7 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
     contrataciones: ['Contrataciones', 'Contratos de alquiler de agentes'],
     errores: ['Log de errores', 'Incidencias técnicas de los agentes']
   };
-  const NAV_BASE = 'relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium lg:justify-start';
+  const NAV_BASE = 'relative flex items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm font-medium lg:justify-start ' + FOCO;
   const NAV_IDLE = 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100';
   const NAV_ACTIVE = 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300';
 
