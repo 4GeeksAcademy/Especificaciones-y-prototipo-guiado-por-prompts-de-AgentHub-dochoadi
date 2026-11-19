@@ -256,9 +256,52 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **Sin verificar en navegador (ERR-004)**: transición visible de ~300 ms y rotación del chevron (CA-26), punto pulsante (CA-29), engranaje reconocible a 16 px, aspecto a 1440 y 768 px (tabla sin scroll horizontal y menús sin recortar, CA-10/CA-19), claro/oscuro de tabla, chips, badges, menú y modal con textarea (CA-40), anillo de foco del textarea, `confirm()` nativo y que Tailwind CDN genere las clases inyectadas por JS (`grid-rows-[…]`, `max-w-2xl`, `animate-pulse`). Cálculo a 768 px: 656 px útiles; contenido estimado ≈ 590 px (agente ≈ 110, propietario ≈ 80, estado ≈ 95, skills ≈ 150 con la chip más larga, ⋮ 32, padding 120).
 - **Revisión** (contra `docs/EVALUACION.md`): E5 ⚠️ (2 de 5 secciones). E6 ⚠️ (sin cambio en «Ver detalle»; «Configurar» en Agentes ya cumple su parte de CA-20). E7 ⚠️ (2 modales). E8 ⚠️ (colapsable implementado y probado en DOM simulado; falta ver la transición). E10 ⚠️ (skills por nombre desde `SKILLS`; borrado sin efectos en otras secciones). E11 ⚠️ (2 de 5 tablas). E4 sigue ✅. `docs/EVALUACION.md` no se toca en este prompt (se sincroniza en el siguiente docs).
 - **Decisión**: aceptada a falta de la verificación visual manual.
-- **Commit**: `feat(F3-agentes): skills colapsables y configurar` · _hash: pendiente_
+- **Verificación manual en navegador (actualización en P3.5, 2026-11-19)**: **pendiente**. El prompt de P3.5–P3.7 pedía anotarla, pero el marcador «[escribe aquí…]» llegó sin rellenar; no se da por verificado.
+- **Commit**: `feat(F3-agentes): skills colapsables y configurar` · `e1d95c5`
 - **Tag**: — (F3 sigue abierta)
 - **Errores**: ninguno nuevo (ERR-004 sigue mitigado).
+
+### P3.5 — Sección Skills: catálogo, modal y eliminar (2026-11-19)
+- **Agente/skill**: sesión principal siguiendo `.claude/agents/frontend-builder.md` · skills `ui-patterns`, `tailwind-vanilla`, `phase-logger`
+- **Prompt** (resumen fiel; el mismo prompt cubre P3.5, P3.6 y P3.7, con un commit por parte y push al final):
+  > Fase F3, partes 5–7. Lee CLAUDE.md, CONTEXT.md, SPECS.md (§7, §8, §9, §10.1, §10.4, §10.5, §11 y CA), docs/stitch/04–06 y adaptacion.md. SPECS manda sobre Stitch. Reutiliza badge, dropdown, campo, FOOTER_CERRAR, esc, icon. PASO 0: árbol limpio y commit feat(F3-agentes); anotar hash y verificación manual en P3.4. COMMITS: uno por parte con mensajes exactos, push solo al final, nunca tag ni force.
+  > P3.5: ampliar SKILLS (desc, descCompleta, permisos literales de §10.1); bloque «¿Qué es una skill?»; catálogo con precio y nº de agentes calculado desde AGENTES; dropdown Ver detalle/Eliminar; modal con descCompleta, permisos y badge mini (text-[10px]); «Sin agentes» si 0; eliminar con confirm literal y Set de ocultos (nunca splice). Verificación con tabla «comando | esperado | obtenido | ✅/❌».
+- **Salida**: `index.html`:
+  - Datos: `SKILLS` ampliada con `desc`, `descCompleta` y `permisos` **extraídos por script directamente de la tabla §10.1** de `SPECS.md` (texto literal; `id`, `nombre` y `precio` sin cambios).
+  - Marcado: `<aside>` S7.1 (borde índigo, icono information-circle, `<h3>` y texto literal) encima de `#skills-count` (`aria-live`) y tabla S3.8 con 5 `<th scope="col">` (Precio/mes `hidden lg:table-cell`, último `sr-only` «Acciones»).
+  - Lógica: `renderSkills()` (icono propio en cuadrado, nombre + ID, descripción breve `max-w-md`, precio en €, badge indigo «n agentes» calculado con `agentesConSkill()` sobre el `AGENTES` completo, `dropdown()` Ver detalle/Eliminar, 2 últimas filas hacia arriba); `verSkill()` (modal `max-w-lg`, `<dl>` de 6 campos de S7.5, chips de agentes con `badgeEstadoAgente(a, true)` mini, «Sin agentes» si 0); `eliminarSkill()` (confirm literal, `Set` `skillsOcultas`); delegación en `#view-skills`.
+  - `badge()` acepta un 4.º parámetro `mini` (`BADGE_MINI`: `px-1.5 py-px text-[10px] leading-4`), y `badgeEstadoAgente(a, mini)` lo propaga.
+- **Desviaciones / decisiones (manda SPECS)**:
+  1. **Sin extras de Stitch**: ni KPI («Total habilidades», «Gasto combinado»), ni búsqueda ni «Nueva skill». Texto del bloque explicativo = S7.1, no el de Stitch.
+  2. **Recuento de agentes sobre el dataset maestro**: ocultar un agente en la vista Agentes no cambia «n agentes» ni el modal de Skills (S6.6: el borrado no afecta a otras secciones). Probado.
+  3. **Precio/mes** alineado a la derecha con `tabular-nums` (Stitch; SPECS no fija la alineación).
+  4. «Sin agentes» no se da con el dataset actual (mínimo 2 por skill); está implementado para el caso vacío.
+  5. Añadidos menores: estado vacío «No hay skills.»; al cancelar el `confirm`, el foco vuelve al ⋮.
+- **Verificación** (2026-11-19, script `verify.sh` en el scratchpad):
+
+  | Comando | Esperado | Obtenido | |
+  |---|---|---|---|
+  | `git status --short` | solo la parte | ` M index.html` (+ este fichero) | ✅ |
+  | `grep -cE 'style=\|<style\|\.css\|rel="stylesheet"\|\.style\.'` | 0 | 0 | ✅ |
+  | `grep -c overflow-x-auto` | 0 | 0 | ✅ |
+  | `grep -c '<section'` | 6 | 6 | ✅ |
+  | `grep -c '<symbol'` | 27 | 27 | ✅ |
+  | `grep -c 'Sección en construcción'` | 2 | 2 | ✅ |
+  | `grep -c '<script src'` | 1 | 1 | ✅ |
+  | `grep -n 'SKILLS.splice\|AGENTES.splice\|CONTRATOS.splice'` | sin resultados | sin resultados | ✅ |
+  | `node --check` script principal | OK | OK | ✅ |
+  | jsdom `test-skills.js` | 0 fallos | 103 OK · 0 fallos | ✅ |
+  | jsdom `test-agentes.js` (regresión P3.4) | 0 fallos | 133 OK · 0 fallos | ✅ |
+  | `curl :8000/index.html` | 200 | 200 | ✅ |
+
+  La prueba jsdom cubre: CA-30 (bloque y texto literal, encima del catálogo); CA-31 (3/3/2/3/2 agentes, nombres en el modal: Atlas·Orion·Nova / Atlas·Orion·Vega / Sirius·Nova / Sirius·Lyra·Nova / Orion·Vega, badge mini con estado: SK-05 «Orion Activo», «Vega Fallando»); descripción breve, precio, icono e ID de las 5; dropdown (CA-15…CA-19: abre, otro ⋮, clic en sidebar y en cabecera, Esc + foco, 2 últimas hacia arriba, opción cierra); modal (CA-20…CA-23: clic dentro no cierra, backdrop, Esc, ✕, Cerrar, foco al ⋮, `overflow-hidden`); recuentos intactos tras ocultar Atlas en Agentes; CA-39 (confirm literal, cancelar = 5, aceptar = «4 skills», 2 últimas recalculadas); **tras eliminar «Navegación web», Agentes sigue mostrándola en Orion, «Configurar» funciona y el Dashboard sigue con 245,00 €**; estado vacío; Usuarios con 7 filas; sin errores JS.
+  Primera ejecución: 1 fallo **de la propia prueba** (buscaba la cadena literal `hidden lg:table-cell` y las clases están en otro orden); se corrigió la prueba para comprobar ambas clases en `<th>` y `<td>`.
+  - **Sin verificar en navegador (ERR-004)**: aspecto del bloque S7.1 y de la tabla a 1440/768 px (a 768 px la columna Precio/mes se oculta), legibilidad del badge mini a 10 px, iconos propios de cada skill, claro/oscuro (CA-40).
+- **Revisión**: E5 ⚠️ (3 de 5 secciones). E6 ⚠️ (2 de 4 «Ver detalle»). E7 ⚠️ (3 modales). E10 ⚠️ (descripciones y permisos literales; recuentos calculados). E11 ⚠️ (3 de 5 tablas). E4 sigue ✅.
+- **Decisión**: aceptada a falta de la verificación visual manual.
+- **Commit**: `feat(F3-skills): catálogo, modal y eliminar` · _hash: se anota en el commit de P3.6_
+- **Tag**: —
+- **Errores**: ninguno nuevo.
 
 ## F4 — QA
 _(pendiente)_

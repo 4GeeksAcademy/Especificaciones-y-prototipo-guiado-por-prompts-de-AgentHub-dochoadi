@@ -220,7 +220,32 @@
       </section>
       <section id="view-skills" aria-labelledby="t-skills" class="hidden">
         <h2 id="t-skills" class="sr-only">Skills</h2>
-        <p class="text-slate-500 dark:text-slate-400">Sección en construcción</p>
+
+        <!-- S7.1 — Bloque explicativo -->
+        <aside class="mb-6 flex gap-4 rounded-xl border-l-4 border-indigo-500 bg-indigo-50 p-5 dark:bg-indigo-500/10">
+          <svg class="h-6 w-6 shrink-0 text-indigo-600 dark:text-indigo-300" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-information-circle"/></svg>
+          <div>
+            <h3 class="font-semibold">¿Qué es una skill?</h3>
+            <p class="mt-1 text-sm text-slate-700 dark:text-slate-300">Una skill es una capacidad que se habilita en un agente de AgentHub para que pueda actuar fuera de la conversación: navegar por la web, leer documentos, gestionar un calendario, enviar emails o consultar una base de datos. Cada skill se contrata por separado con una cuota mensual por agente, y el importe de un contrato es la suma de las skills del agente multiplicada por los meses de vigencia.</p>
+          </div>
+        </aside>
+
+        <!-- S7.2 — Catálogo de skills (filas por JS desde SKILLS) -->
+        <p id="skills-count" class="mb-3 text-sm text-slate-500 dark:text-slate-400" aria-live="polite"></p>
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Skill</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Descripción</th>
+                <th scope="col" class="hidden px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 lg:table-cell lg:px-4 dark:text-slate-400">Precio/mes</th>
+                <th scope="col" class="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 lg:px-4 dark:text-slate-400">Agentes</th>
+                <th scope="col" class="px-3 py-3 text-right lg:px-4"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="skills-tbody"></tbody>
+          </table>
+        </div>
       </section>
       <section id="view-contrataciones" aria-labelledby="t-contrataciones" class="hidden">
         <h2 id="t-contrataciones" class="sr-only">Contrataciones</h2>
@@ -258,12 +283,27 @@
   const body = document.body;
 
   /* ---------- Dataset maestro (SPECS §10; se amplía en cada sección) ---------- */
-  const SKILLS = [
-    { id: 'SK-01', nombre: 'Navegación web', precio: 25 },
-    { id: 'SK-02', nombre: 'Lectura de documentos', precio: 30 },
-    { id: 'SK-03', nombre: 'Gestión de calendario', precio: 20 },
-    { id: 'SK-04', nombre: 'Envío de emails', precio: 15 },
-    { id: 'SK-05', nombre: 'Consulta SQL', precio: 35 }
+  const SKILLS = [ // §10.1 (desc = tabla; descCompleta y permisos = modal, S7.5)
+    { id: 'SK-01', nombre: 'Navegación web', precio: 25,
+      desc: 'Abre páginas, rellena formularios y extrae información de sitios web.',
+      descCompleta: 'Permite al agente controlar un navegador sin interfaz para visitar URLs, seguir enlaces, rellenar formularios y extraer texto o tablas. Respeta robots.txt y un límite de 60 peticiones por minuto.',
+      permisos: 'Acceso a Internet saliente' },
+    { id: 'SK-02', nombre: 'Lectura de documentos', precio: 30,
+      desc: 'Lee y resume PDF, Word y hojas de cálculo.',
+      descCompleta: 'Extrae texto, tablas y metadatos de PDF, DOCX y XLSX de hasta 300 páginas, con OCR para documentos escaneados, y genera resúmenes estructurados.',
+      permisos: 'Lectura del almacenamiento del cliente' },
+    { id: 'SK-03', nombre: 'Gestión de calendario', precio: 20,
+      desc: 'Crea, mueve y cancela reuniones en el calendario.',
+      descCompleta: 'Se integra vía OAuth con Google Calendar y Microsoft 365 para consultar disponibilidad, proponer huecos, crear, mover y cancelar eventos e invitar asistentes.',
+      permisos: 'OAuth de calendario' },
+    { id: 'SK-04', nombre: 'Envío de emails', precio: 15,
+      desc: 'Redacta y envía emails transaccionales y de seguimiento.',
+      descCompleta: 'Redacta y envía emails desde el dominio verificado del cliente vía SMTP, con plantillas, adjuntos y reintento automático ante errores temporales.',
+      permisos: 'SMTP del dominio del cliente' },
+    { id: 'SK-05', nombre: 'Consulta SQL', precio: 35,
+      desc: 'Ejecuta consultas de solo lectura sobre bases de datos.',
+      descCompleta: 'Ejecuta consultas SELECT de solo lectura sobre PostgreSQL o MySQL del cliente, con tiempo máximo de 60 s por consulta y devolución de resultados en tabla.',
+      permisos: 'Credenciales de BD de solo lectura' }
   ];
   const AGENTES = [ // §10.2 (promptSistema: texto literal; editable en memoria desde «Configurar», S6.5)
     { id: 'AG-01', nombre: 'Atlas', propietario: 'Acme Corp', estado: 'activo', skills: ['SK-01', 'SK-02'],
@@ -319,7 +359,9 @@
     indigo: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300',
     violet: 'bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300'
   };
-  const badge = (variante, texto, prefijo = '') => `<span class="${BADGE_BASE} ${BADGE[variante]}">${prefijo}${esc(texto)}</span>`;
+  // mini = true → badge compacto text-[10px] (S7.5: estado de cada agente en el modal de skill)
+  const BADGE_MINI = 'inline-flex items-center gap-1 rounded-full px-1.5 py-px text-[10px] font-medium leading-4 whitespace-nowrap';
+  const badge = (variante, texto, prefijo = '', mini = false) => `<span class="${mini ? BADGE_MINI : BADGE_BASE} ${BADGE[variante]}">${prefijo}${esc(texto)}</span>`;
 
   /* ---------- Piezas de tabla comunes (S3.7, S3.8, §11.3) ---------- */
   const CELDA = 'px-3 py-3 align-middle lg:px-4';
@@ -514,9 +556,9 @@
     inactivo: ['slate', 'Inactivo', 'bg-slate-400'],
     fallando: ['red', 'Fallando', 'bg-red-500 animate-pulse']
   };
-  const badgeEstadoAgente = a => {
+  const badgeEstadoAgente = (a, mini = false) => {
     const [variante, texto, punto] = ESTADO_AGENTE[a.estado];
-    return badge(variante, texto, `<span class="h-1.5 w-1.5 rounded-full ${punto}" aria-hidden="true"></span>`);
+    return badge(variante, texto, `<span class="h-1.5 w-1.5 rounded-full ${punto}" aria-hidden="true"></span>`, mini);
   };
   const CHIP = 'rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300';
   const nombreSkill = id => SKILLS.find(s => s.id === id).nombre;
@@ -618,6 +660,77 @@
     else if (b.dataset.action === 'eliminar-agente') eliminarAgente(a, origenBtn);
   });
   renderAgentes();
+
+  /* ---------- Skills (§7) ---------- */
+  const ICONO_SKILL = { 'SK-01': 'globe-alt', 'SK-02': 'document-magnifying-glass', 'SK-03': 'calendar-days', 'SK-04': 'envelope', 'SK-05': 'circle-stack' }; // S7.2
+  // S7.3: calculado desde el dataset maestro AGENTES (los agentes ocultos en la vista Agentes siguen contando: S6.6)
+  const agentesConSkill = id => AGENTES.filter(a => a.skills.includes(id));
+  // Decisión P3.3b: «Eliminar» oculta el ID; SKILLS no se muta (precioSkill()/nombreSkill() de Agentes y Contrataciones dependen de él; S7.6)
+  const skillsOcultas = new Set();
+  const skillsVisibles = () => SKILLS.filter(s => !skillsOcultas.has(s.id));
+  const tbodySkills = document.getElementById('skills-tbody');
+
+  const renderSkills = () => {
+    const lista = skillsVisibles();
+    setText('skills-count', plural(lista.length, 'skill', 'skills'));
+    tbodySkills.innerHTML = lista.length ? lista.map((s, i) => `
+      <tr class="${FILA}">
+        <td class="${CELDA}">
+          <div class="flex items-center gap-3">
+            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">${icon(ICONO_SKILL[s.id], 'h-5 w-5')}</span>
+            <div>
+              <p class="font-medium text-slate-900 dark:text-slate-100">${esc(s.nombre)}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">${esc(s.id)}</p>
+            </div>
+          </div>
+        </td>
+        <td class="${CELDA} max-w-md text-slate-600 dark:text-slate-300">${esc(s.desc)}</td>
+        <td class="${CELDA} hidden whitespace-nowrap text-right tabular-nums lg:table-cell">${eur(s.precio)}</td>
+        <td class="${CELDA}">${badge('indigo', plural(agentesConSkill(s.id).length, 'agente', 'agentes'))}</td>
+        <td class="${CELDA} text-right">${dropdown(s.nombre, [
+          { accion: 'ver-skill', id: s.id, icono: 'eye', texto: 'Ver detalle' },
+          { accion: 'eliminar-skill', id: s.id, icono: 'trash', texto: 'Eliminar', peligro: true }
+        ], i >= lista.length - 2)}</td>
+      </tr>`).join('') : `<tr><td colspan="5" class="${VACIA}">No hay skills.</td></tr>`;
+  };
+
+  const verSkill = (s, origenBtn) => {                                                     // S7.5
+    const ags = agentesConSkill(s.id);
+    const chips = ags.length
+      ? `<ul class="flex flex-wrap gap-2">${ags.map(a => `<li class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300">${esc(a.nombre)} ${badgeEstadoAgente(a, true)}</li>`).join('')}</ul>`
+      : 'Sin agentes';
+    openModal(origenBtn, {
+      titulo: 'Detalle de skill',
+      subtitulo: s.nombre,
+      ancho: 'max-w-lg',
+      body: `<dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+        ${campo('ID', esc(s.id))}
+        ${campo('Nombre', esc(s.nombre))}
+        ${campo('Precio/mes', eur(s.precio))}
+        ${campo('Permisos requeridos', esc(s.permisos))}
+        ${campo('Descripción completa', `<span class="font-normal text-slate-700 dark:text-slate-300">${esc(s.descCompleta)}</span>`, true)}
+        ${campo('Agentes con la skill habilitada', chips, true)}
+      </dl>`
+    });
+  };
+
+  const eliminarSkill = (s, origenBtn) => {                                                 // S7.6
+    if (!confirm(`¿Eliminar la skill ${s.nombre} del catálogo? La acción solo afecta a esta vista.`)) { origenBtn.focus(); return; }
+    skillsOcultas.add(s.id);
+    renderSkills();
+  };
+
+  document.getElementById('view-skills').addEventListener('click', e => {
+    const b = e.target.closest('[data-action]');
+    if (!b) return;
+    const s = SKILLS.find(x => x.id === b.dataset.id);
+    if (!s) return;
+    const origenBtn = toggleDe(b);
+    closeMenus();                                                                           // S7.4: elegir una opción cierra el menú
+    if (b.dataset.action === 'ver-skill') verSkill(s, origenBtn);
+    else if (b.dataset.action === 'eliminar-skill') eliminarSkill(s, origenBtn);
+  });
+  renderSkills();
 
   /* ---------- Navegación por hash ---------- */
   const VISTAS = ['dashboard', 'usuarios', 'agentes', 'skills', 'contrataciones', 'errores'];
