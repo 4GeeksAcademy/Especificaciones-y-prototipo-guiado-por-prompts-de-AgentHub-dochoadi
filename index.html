@@ -1051,7 +1051,8 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
           ${campo('Descripción', esc(e.descripcion), true)}
         </dl>
         <p class="mt-6 text-xs uppercase text-slate-500 dark:text-slate-400">Traza completa</p>
-        <pre class="mt-2 max-h-72 overflow-auto rounded-lg bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100 dark:bg-black/60">${esc(e.traza)}</pre>`,
+        <!-- ERR-012: tabindex="0" para poder desplazar la traza con el teclado (WCAG 2.1.1) -->
+        <pre tabindex="0" aria-label="Traza completa de ${esc(e.id)}" class="mt-2 max-h-72 overflow-auto rounded-lg bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100 dark:bg-black/60 ${FOCO}">${esc(e.traza)}</pre>`,
       footer: (e.estado === 'abierto'
         ? `<button type="button" data-resolver-error="${esc(e.id)}" class="${BTN_EXITO}"><span class="inline-flex items-center gap-1.5">${icon('check-circle')}Marcar como resuelto</span></button>`
         : '') + FOOTER_CERRAR
