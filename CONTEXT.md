@@ -28,11 +28,11 @@ Fijar en la spec y no variar:
 | F0 | Estructura Claude + docs | hecho al commitear |
 | F1 | `SPECS.md` (commit propio) | cerrada (`b3b4d64`, tag `F1-spec`) |
 | F2 | Propuesta Google Stitch (`docs/stitch/`) | cerrada (`a5be32d`, tag `F2-stitch`) |
-| F3 | `index.html` | en curso (P3.0 `345304a`; P3.1 layout `b91ee39`; P3.2 Dashboard hecho sin commitear; P3.1 y P3.2 pendientes de verificación en navegador) |
+| F3 | `index.html` | en curso (commiteados: P3.0 `345304a`; P3.1 layout `b91ee39`; P3.1b erratas `e803934`; P3.2 Dashboard `c4aea9f`; P3.2b docs. P3.1 y P3.2 pendientes de verificación manual en navegador, ERR-004) |
 | F4 | QA + `docs/EVALUACION.md` | pendiente |
 | F5 | Entrega GitHub público | pendiente |
 
-**Último commit/tag**: `b91ee39` `feat(F3-layout): sidebar, topbar, modo oscuro y navegación` · último tag `F2-stitch` · **Hecho sin commit**: P3.2 (Dashboard: 4 tarjetas calculadas desde `SKILLS`/`AGENTES`/`CONTRATOS` y placeholder de gráfico; `#icon-test` eliminado → 6 secciones). **Próximo paso**: commit de P3.2 (`feat(F3-dashboard): tarjetas de métricas y placeholder de gráfico`) y luego P3.3 — Usuarios. Pendiente: verificación visual en navegador (1440/768 px, claro/oscuro) y decidir el sprite (`hidden` vs `absolute h-0 w-0`); errata «(28)» → «(27)» en `.claude/skills/ui-patterns/SKILL.md`.
+**Último commit/tag**: `c4aea9f` `feat(F3-dashboard): tarjetas de métricas y placeholder de gráfico` · último tag `F2-stitch` · Sin cambios de código pendientes (P3.2b solo docs). **Decisiones fijadas**: SPECS manda sobre Stitch; sprite con `absolute h-0 w-0 overflow-hidden` (definitivo); título visible solo en el topbar (`<h2 class="sr-only">` por sección); el `index.html` anterior a SPECS (`0dfaf38`, borrado en `a9b4fe4`) es de la plantilla. **Próximo paso**: P3.3 — Usuarios (`feat(F3-usuarios): tabla, dropdown y modal`). Pendiente: verificación visual manual en navegador por la pestaña Ports, puerto 8000 (1440/768 px, claro/oscuro), ver ERR-004.
 Reanudar sesión: `docs/RETOMAR.md`.
 
 Detalle en `docs/FASES.md`. Evaluación en `docs/EVALUACION.md`. Errores en `docs/ERRORES.md`.

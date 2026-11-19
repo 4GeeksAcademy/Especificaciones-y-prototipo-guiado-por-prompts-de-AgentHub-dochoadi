@@ -132,6 +132,7 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
     3. **Iconos**: 27 únicos, no 28. Los trazos son **simplificados, escritos a mano**, no los paths oficiales de Heroicons: hay que revisarlos visualmente en #icon-test.
     4. **Sección extra**: `#icon-test` es la séptima `<section>`; CA-04 exige 6. Se elimina en P3.2.
 - **Decisión**: iterar — pendiente verificación visual en navegador (1440 y 768 px, claro y oscuro) y revertir sprite a `hidden` si pinta bien. Próxima entrada: P3.2 (Dashboard).
+  - **Actualización (P3.2b, 2026-11-19)**: la decisión del sprite es **definitiva**: `class="absolute h-0 w-0 overflow-hidden"`. **No se revierte a `hidden`** (evita el riesgo conocido de los sprites con `display:none`, que pueden romper referencias internas como gradientes o máscaras, sin coste visual ni de accesibilidad).
 - **Commit**: `feat(F3-layout): sidebar, topbar, modo oscuro y navegación` · `b91ee39`
 - **Tag**: — (F3 sigue abierta; `F3-build` al cerrar)
 - **Errores**: ninguno registrado (ERR-004 no creado: el fallo del sprite no se ha observado).
@@ -159,9 +160,26 @@ Formato de entrada: ver skill `.claude/skills/phase-logger/SKILL.md`. Orden cron
   - **No verificado en navegador**: no hay navegador en el Codespace y la instalación de Playwright/Chromium fue denegada por permisos. A 768 px, por cálculo: 768 − 64 (rail) − 48 (padding) = 656 px → 2 columnas de 316 px, sin scroll horizontal. Pendiente comprobar visualmente: 1440/768 px, claro/oscuro, CA-13 y CA-14 (clic → #errores), y el sprite (`absolute h-0 w-0` vs `hidden`, arrastrado de P3.1).
 - **Revisión** (contra `docs/EVALUACION.md`): E3 deja de fallar por la séptima sección (CA-04 → 6). E4 ✅ por grep. E9: todas las clases nuevas con par `dark:`. E10: Dashboard calculado desde el mismo dataset que usarán Agentes y Contrataciones. E11: `article`, `a`, `section`. E12 pendiente de capturas.
 - **Decisión**: aceptada a falta de la verificación visual.
-- **Commit**: `feat(F3-dashboard): tarjetas de métricas y placeholder de gráfico` · _hash: pendiente_
+- **Commit**: `feat(F3-dashboard): tarjetas de métricas y placeholder de gráfico` · `c4aea9f`
 - **Tag**: — (F3 sigue abierta)
-- **Errores**: ninguno registrado.
+- **Errores**: ninguno registrado (la falta de navegador se registra como ERR-004 en P3.2b).
+
+### P3.2b — Sincronizar documentación (2026-11-19)
+- **Agente/skill**: sesión principal · skills `phase-logger`, `error-tracker`
+- **Prompt** (resumen fiel; literal en la sesión):
+  > Fase F3, parte 2b (P3.2b): sincronizar documentación. Solo toca CONTEXT.md, docs/PROMPTS.md, docs/ERRORES.md y docs/EVALUACION.md. No toques index.html. No hagas commits.
+  > 1. PROMPTS: P3.2 → hash c4aea9f; en P3.1, decisión del sprite definitiva (`absolute h-0 w-0 overflow-hidden`), sin revertir a `hidden`; añadir entrada P3.2b. 2. ERRORES: ERR-004 (F3, mitigado), Codespace sin navegador y Playwright denegado → verificación manual del usuario por la pestaña Ports (8000). 3. EVALUACION: E2 ✅, E4 ✅, E1 ⚠️ con la aclaración de la plantilla; E3, E9, E10, E11, E12 ⚠️ con lo hecho y lo que falta; no marcar ✅ nada sin verificar. 4. CONTEXT: último commit c4aea9f; P3.0, P3.1, P3.1b y P3.2 commiteados; quitar la errata «(28)» y la duda del sprite; próximo paso P3.3 Usuarios.
+- **Salida**:
+  - `docs/PROMPTS.md`: hash de P3.2 (`c4aea9f`); nota de sprite definitivo en P3.1; esta entrada. P3.1b (`e803934`, erratas «28 → 27 iconos» en `ui-patterns` y en esta bitácora) no tenía entrada propia; queda referenciada aquí.
+  - `docs/ERRORES.md`: ERR-004 (mitigado).
+  - `docs/EVALUACION.md`: leyenda con ⚠️ (parcial); E2 y E4 ✅ con evidencia; E1, E3, E9, E10, E11, E12 ⚠️; E5–E8 siguen ⬜; registro de verificación del 2026-11-19 (sección C).
+  - `CONTEXT.md`: estado de F3 y último commit actualizados; eliminadas la errata «(28)» (resuelta en `e803934`) y la duda del sprite.
+- **Verificación**: `git status --short` → solo los 4 ficheros de docs; `index.html` sin cambios. Comprobaciones que respaldan la matriz (2026-11-19): `grep -cE 'style=|<style|\.css|rel="stylesheet"|\.style\.' index.html` → 0 · `grep -c overflow-x-auto index.html` → 0 · `grep -c '<script src' index.html` → 1 (CDN Tailwind) · `<section` → 6 · `<symbol` → 27 · `grep -rn "(28)" .claude` → sin resultados.
+- **Revisión** (contra `docs/EVALUACION.md`): solo documentación; ningún criterio cambia por código. E2 y E4 pasan a ✅ por evidencia ya existente.
+- **Decisión**: aceptada.
+- **Commit**: `docs(F3): registra hash de P3.2 y sincroniza estado` · _hash: pendiente_
+- **Tag**: —
+- **Errores**: ERR-004 (registrado, mitigado).
 
 ## F4 — QA
 _(pendiente)_
