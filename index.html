@@ -478,10 +478,11 @@ file=facturas_octubre_2026.pdf pages=214 processed=162 result=FAILED` },
   const ITEM_OFF = 'cursor-not-allowed text-slate-500 opacity-50 dark:text-slate-400';                             // §11.3 deshabilitada
   const claseItem = o => o.deshabilitado ? ITEM_OFF : o.peligro ? ITEM_PELIGRO : o.exito ? ITEM_EXITO : ITEM_NORMAL;
   // opciones: [{ accion, id, icono, texto, peligro, exito, deshabilitado }]; arriba = true en las 2 últimas filas (§11.3)
-  const dropdown = (nombre, opciones, arriba) => `
+  // ERR-008: id del menú derivado del ID del registro (US-/AG-/SK-/CT-/LOG- son únicos entre secciones)
+  const dropdown = (nombre, opciones, arriba, mid = `menu-${esc(opciones[0].id)}`) => `
     <div class="relative inline-block text-left" data-dropdown>
-      <button type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Acciones para ${esc(nombre)}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200">${icon('ellipsis-vertical', 'h-5 w-5')}</button>
-      <div role="menu" class="absolute right-0 z-40 hidden w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900 ${arriba ? 'bottom-full mb-1' : 'mt-1'}">
+      <button type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="${mid}" aria-label="Acciones para ${esc(nombre)}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200">${icon('ellipsis-vertical', 'h-5 w-5')}</button>
+      <div role="menu" id="${mid}" aria-label="Acciones para ${esc(nombre)}" class="absolute right-0 z-40 hidden w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900 ${arriba ? 'bottom-full mb-1' : 'mt-1'}">
         ${opciones.map(o => `<button type="button" role="menuitem" data-action="${o.accion}" data-id="${esc(o.id)}"${o.deshabilitado ? ' disabled aria-disabled="true"' : ''} class="${ITEM_BASE} ${claseItem(o)}">${icon(o.icono)}${esc(o.texto)}</button>`).join('')}
       </div>
     </div>`;
